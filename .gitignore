@@ -1,0 +1,28 @@
+# Binaries
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test & coverage
+coverage.out
+coverage.html
+*.test
+*.out
+
+# Local client state / secrets
+*.token
+.gophkeeper/
+dist/
+
+# Env files
+.env
+.env.local
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/

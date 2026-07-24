@@ -1,0 +1,26 @@
+# GophKeeper — локальный стек для разработки и демонстрации.
+#
+# В Спринте 0 поднимается только PostgreSQL. Сервис `server` (и применение
+# миграций) добавляется в Спринте 1, после чего `docker compose up` будет
+# разворачивать всю систему одной командой, как требует ТЗ.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gophkeeper-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gophkeeper}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gophkeeper}
+      POSTGRES_DB: ${POSTGRES_DB:-gophkeeper}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gophkeeper} -d ${POSTGRES_DB:-gophkeeper}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
