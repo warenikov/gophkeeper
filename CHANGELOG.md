@@ -7,6 +7,16 @@
 
 ## [Unreleased]
 
+### Added (Спринт 2 — полнота данных и синхронизация)
+- Типы данных «банковская карта» и «бинарные данные» (из файла, с лимитом
+  размера); команды `add card`, `add binary`, `update` (все типы), `get --out`.
+- Синхронизация: тумбстоны (мягкое удаление) + монотонная ревизия, gRPC-метод
+  `Sync`, локальный кэш клиента, команда `sync`.
+- Офлайн-режим (read-only): `list` и `get` читают из кэша при недоступности
+  сервера.
+- Интеграционные тесты БД-слоя против реального PostgreSQL (пропуск без
+  `GOPHKEEPER_TEST_DSN`); `make test-integration` / `cover-integration`.
+
 ### Added (Спринт 1 — MVP)
 - gRPC-контракты Auth (Register/Login) и Secrets (CRUD) — proto как документация.
 - Сервер: PostgreSQL (pgx v5), миграции при старте (golang-migrate + embed),
