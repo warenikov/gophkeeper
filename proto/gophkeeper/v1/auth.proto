@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+// Пакет gophkeeper.v1 описывает контракт взаимодействия клиента и сервера
+// GophKeeper. Файл auth.proto отвечает за регистрацию и аутентификацию.
+package gophkeeper.v1;
+
+option go_package = "github.com/warenik/gophkeeper/internal/pb;pb";
+
+// RegisterRequest — запрос регистрации нового пользователя.
+message RegisterRequest {
+  string login = 1;
+  string password = 2;
+}
+
+// LoginRequest — запрос аутентификации существующего пользователя.
+message LoginRequest {
+  string login = 1;
+  string password = 2;
+}
+
+// AuthResponse — ответ с JWT-токеном доступа.
+message AuthResponse {
+  string token = 1;
+}
+
+// AuthService — регистрация и вход. Методы публичные (без авторизации).
+service AuthService {
+  // Register создаёт нового пользователя и возвращает токен доступа.
+  rpc Register(RegisterRequest) returns (AuthResponse);
+  // Login аутентифицирует пользователя и возвращает токен доступа.
+  rpc Login(LoginRequest) returns (AuthResponse);
+}

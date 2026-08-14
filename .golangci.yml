@@ -31,6 +31,8 @@ linters:
       enable-all: true
       disable:
         - fieldalignment
+        # shadow — шумный анализатор, Go-команда не включает его по умолчанию.
+        - shadow
     staticcheck:
       checks:
         - all
@@ -54,6 +56,14 @@ linters:
         - diagnostic
         - performance
         - style
+      settings:
+        # Доменные записи (model.Secret ~152 б) передаются по значению в
+        # нечастых операциях — это идиоматично; порог поднят, чтобы ловить
+        # действительно крупные параметры.
+        hugeParam:
+          sizeThreshold: 256
+        rangeValCopy:
+          sizeThreshold: 256
     nolintlint:
       require-explanation: true
       require-specific: true

@@ -66,6 +66,15 @@ cover-html: cover
 lint:
 	golangci-lint run ./...
 
+## proto: сгенерировать Go-код из .proto (нужны protoc, protoc-gen-go, protoc-gen-go-grpc)
+.PHONY: proto
+proto:
+	protoc \
+		--proto_path=proto \
+		--go_out=. --go_opt=module=github.com/warenik/gophkeeper \
+		--go-grpc_out=. --go-grpc_opt=module=github.com/warenik/gophkeeper \
+		proto/gophkeeper/v1/*.proto
+
 ## tidy: tidy go.mod / go.sum
 .PHONY: tidy
 tidy:
