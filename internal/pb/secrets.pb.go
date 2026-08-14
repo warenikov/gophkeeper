@@ -34,6 +34,8 @@ const (
 	SecretType_SECRET_TYPE_UNSPECIFIED    SecretType = 0
 	SecretType_SECRET_TYPE_LOGIN_PASSWORD SecretType = 1
 	SecretType_SECRET_TYPE_TEXT           SecretType = 2
+	SecretType_SECRET_TYPE_CARD           SecretType = 3
+	SecretType_SECRET_TYPE_BINARY         SecretType = 4
 )
 
 // Enum value maps for SecretType.
@@ -42,11 +44,15 @@ var (
 		0: "SECRET_TYPE_UNSPECIFIED",
 		1: "SECRET_TYPE_LOGIN_PASSWORD",
 		2: "SECRET_TYPE_TEXT",
+		3: "SECRET_TYPE_CARD",
+		4: "SECRET_TYPE_BINARY",
 	}
 	SecretType_value = map[string]int32{
 		"SECRET_TYPE_UNSPECIFIED":    0,
 		"SECRET_TYPE_LOGIN_PASSWORD": 1,
 		"SECRET_TYPE_TEXT":           2,
+		"SECRET_TYPE_CARD":           3,
+		"SECRET_TYPE_BINARY":         4,
 	}
 )
 
@@ -572,12 +578,14 @@ const file_gophkeeper_v1_secrets_proto_rawDesc = "" +
 	"\aversion\x18\x05 \x01(\x03R\aversion\"%\n" +
 	"\x13DeleteSecretRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x16\n" +
-	"\x14DeleteSecretResponse*_\n" +
+	"\x14DeleteSecretResponse*\x8d\x01\n" +
 	"\n" +
 	"SecretType\x12\x1b\n" +
 	"\x17SECRET_TYPE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aSECRET_TYPE_LOGIN_PASSWORD\x10\x01\x12\x14\n" +
-	"\x10SECRET_TYPE_TEXT\x10\x022\xfb\x02\n" +
+	"\x10SECRET_TYPE_TEXT\x10\x02\x12\x14\n" +
+	"\x10SECRET_TYPE_CARD\x10\x03\x12\x16\n" +
+	"\x12SECRET_TYPE_BINARY\x10\x042\xfb\x02\n" +
 	"\x0eSecretsService\x12C\n" +
 	"\x06Create\x12\".gophkeeper.v1.CreateSecretRequest\x1a\x15.gophkeeper.v1.Secret\x12M\n" +
 	"\x04List\x12!.gophkeeper.v1.ListSecretsRequest\x1a\".gophkeeper.v1.ListSecretsResponse\x12=\n" +

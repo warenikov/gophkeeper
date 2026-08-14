@@ -34,6 +34,10 @@ func toProtoType(t model.SecretType) pb.SecretType {
 		return pb.SecretType_SECRET_TYPE_LOGIN_PASSWORD
 	case model.SecretTypeText:
 		return pb.SecretType_SECRET_TYPE_TEXT
+	case model.SecretTypeCard:
+		return pb.SecretType_SECRET_TYPE_CARD
+	case model.SecretTypeBinary:
+		return pb.SecretType_SECRET_TYPE_BINARY
 	default:
 		return pb.SecretType_SECRET_TYPE_UNSPECIFIED
 	}
@@ -46,6 +50,10 @@ func toModelType(t pb.SecretType) model.SecretType {
 		return model.SecretTypeLoginPassword
 	case pb.SecretType_SECRET_TYPE_TEXT:
 		return model.SecretTypeText
+	case pb.SecretType_SECRET_TYPE_CARD:
+		return model.SecretTypeCard
+	case pb.SecretType_SECRET_TYPE_BINARY:
+		return model.SecretTypeBinary
 	default:
 		return model.SecretTypeUnspecified
 	}

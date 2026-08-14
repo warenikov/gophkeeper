@@ -54,6 +54,10 @@ func typeName(t pb.SecretType) string {
 		return "логин/пароль"
 	case pb.SecretType_SECRET_TYPE_TEXT:
 		return "текст"
+	case pb.SecretType_SECRET_TYPE_CARD:
+		return "карта"
+	case pb.SecretType_SECRET_TYPE_BINARY:
+		return "бинарные"
 	default:
 		return "неизвестно"
 	}

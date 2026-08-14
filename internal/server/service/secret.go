@@ -73,7 +73,8 @@ func (s *Secret) Delete(ctx context.Context, ownerID, id string) error {
 // validate проверяет тип и содержимое записи (используется при создании).
 func validate(secret model.Secret) error {
 	switch secret.Type {
-	case model.SecretTypeLoginPassword, model.SecretTypeText:
+	case model.SecretTypeLoginPassword, model.SecretTypeText,
+		model.SecretTypeCard, model.SecretTypeBinary:
 		// поддерживаемые типы
 	default:
 		return fmt.Errorf("%w: unsupported secret type", model.ErrValidation)

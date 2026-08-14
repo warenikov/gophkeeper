@@ -214,6 +214,61 @@ func TestEndToEnd(t *testing.T) {
 	}
 }
 
+// TestAllSecretTypes проверяет создание и получение всех типов записей через
+// реальный gRPC-стек.
+func TestAllSecretTypes(t *testing.T) {
+	dialer := startServer(t)
+	ctx := context.Background()
+
+	token, err := newKeeper(t, dialer, "").Register(ctx, "carol", "pw")
+	if err != nil {
+		t.Fatalf("Register: %v", err)
+	}
+	c := newKeeper(t, dialer, token)
+
+	types := []pb.SecretType{
+		pb.SecretType_SECRET_TYPE_LOGIN_PASSWORD,
+		pb.SecretType_SECRET_TYPE_TEXT,
+		pb.SecretType_SECRET_TYPE_CARD,
+		pb.SecretType_SECRET_TYPE_BINARY,
+	}
+	for _, typ := range types {
+		created, err := c.Create(ctx, typ, "name", "meta", []byte("payload"))
+		if err != nil {
+			t.Fatalf("Create(%v): %v", typ, err)
+		}
+		got, err := c.Get(ctx, created.GetId())
+		if err != nil {
+			t.Fatalf("Get(%v): %v", typ, err)
+		}
+		if got.GetType() != typ {
+			t.Errorf("тип = %v, ожидался %v", got.GetType(), typ)
+		}
+	}
+
+	list, err := c.List(ctx)
+	if err != nil {
+		t.Fatalf("List: %v", err)
+	}
+	if len(list) != len(types) {
+		t.Errorf("в списке %d записей, ожидалось %d", len(list), len(types))
+	}
+}
+
+// TestDialAndClose проверяет создание клиента (grpc.NewClient ленивый и не
+// требует живого сервера) и закрытие соединения — с токеном и без.
+func TestDialAndClose(t *testing.T) {
+	for _, token := range []string{"tok", ""} {
+		c, err := Dial("localhost:12345", token)
+		if err != nil {
+			t.Fatalf("Dial(token=%q): %v", token, err)
+		}
+		if err := c.Close(); err != nil {
+			t.Errorf("Close(token=%q): %v", token, err)
+		}
+	}
+}
+
 // TestUnauthenticated проверяет, что без токена защищённый метод отклоняется.
 func TestUnauthenticated(t *testing.T) {
 	dialer := startServer(t)

@@ -37,6 +37,8 @@ const (
 	SecretTypeUnspecified   SecretType = 0
 	SecretTypeLoginPassword SecretType = 1
 	SecretTypeText          SecretType = 2
+	SecretTypeCard          SecretType = 3
+	SecretTypeBinary        SecretType = 4
 )
 
 // Secret — приватная запись владельца. EncryptedPayload зашифрован на клиенте;

@@ -37,7 +37,10 @@ func TestToGRPCError(t *testing.T) {
 }
 
 func TestTypeMappingRoundtrip(t *testing.T) {
-	types := []model.SecretType{model.SecretTypeLoginPassword, model.SecretTypeText}
+	types := []model.SecretType{
+		model.SecretTypeLoginPassword, model.SecretTypeText,
+		model.SecretTypeCard, model.SecretTypeBinary,
+	}
 	for _, mt := range types {
 		if got := toModelType(toProtoType(mt)); got != mt {
 			t.Errorf("roundtrip типа: получено %d, ожидалось %d", got, mt)

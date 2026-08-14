@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -12,7 +13,9 @@ import (
 
 // newGetCmd возвращает команду получения и расшифровки одной записи.
 func newGetCmd() *cobra.Command {
-	return &cobra.Command{
+	var outFile string
+
+	cmd := &cobra.Command{
 		Use:   "get <id>",
 		Short: "Получить и расшифровать запись по идентификатору",
 		Args:  cobra.ExactArgs(1),
@@ -42,14 +45,18 @@ func newGetCmd() *cobra.Command {
 				return err
 			}
 
-			return printSecret(cmd, secret, plaintext)
+			return printSecret(cmd, secret, plaintext, outFile)
 		},
 	}
+
+	cmd.Flags().StringVar(&outFile, "out", "", "файл для сохранения бинарных данных")
+	return cmd
 }
 
 // printSecret выводит запись: метаданные в открытом виде и расшифрованную
-// нагрузку в зависимости от типа.
-func printSecret(cmd *cobra.Command, secret *pb.Secret, plaintext []byte) error {
+// нагрузку в зависимости от типа. Для бинарных данных при заданном outFile
+// содержимое пишется в файл.
+func printSecret(cmd *cobra.Command, secret *pb.Secret, plaintext []byte, outFile string) error {
 	out := cmd.OutOrStdout()
 	fmt.Fprintf(out, "Имя:    %s\n", secret.GetName())
 	fmt.Fprintf(out, "Тип:    %s\n", typeName(secret.GetType()))
@@ -67,8 +74,32 @@ func printSecret(cmd *cobra.Command, secret *pb.Secret, plaintext []byte) error 
 		fmt.Fprintf(out, "Пароль: %s\n", lp.Password)
 	case pb.SecretType_SECRET_TYPE_TEXT:
 		fmt.Fprintf(out, "Текст:  %s\n", payload.DecodeText(plaintext))
+	case pb.SecretType_SECRET_TYPE_CARD:
+		c, err := payload.DecodeCard(plaintext)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(out, "Номер:  %s\n", c.Number)
+		fmt.Fprintf(out, "Держатель: %s\n", c.Holder)
+		fmt.Fprintf(out, "Срок:   %s\n", c.Expiry)
+		fmt.Fprintf(out, "CVV:    %s\n", c.CVV)
+	case pb.SecretType_SECRET_TYPE_BINARY:
+		return writeBinary(cmd, plaintext, outFile)
 	default:
 		fmt.Fprintf(out, "Данные: %x\n", plaintext)
 	}
+	return nil
+}
+
+// writeBinary сохраняет бинарные данные в файл (--out) или сообщает их размер.
+func writeBinary(cmd *cobra.Command, data []byte, outFile string) error {
+	if outFile == "" {
+		fmt.Fprintf(cmd.OutOrStdout(), "Бинарные данные: %d байт (укажите --out для сохранения в файл)\n", len(data))
+		return nil
+	}
+	if err := os.WriteFile(outFile, data, 0o600); err != nil {
+		return fmt.Errorf("запись файла: %w", err)
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "Сохранено %d байт в %s\n", len(data), outFile)
 	return nil
 }
