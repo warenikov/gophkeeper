@@ -1,0 +1,30 @@
+# Многоступенчатая сборка сервера GophKeeper.
+FROM golang:1.26-alpine AS build
+
+WORKDIR /src
+
+# Сначала зависимости — для кеширования слоёв.
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+ARG VERSION=dev
+ARG BUILD_DATE=unknown
+ARG COMMIT=unknown
+
+RUN CGO_ENABLED=0 go build \
+    -ldflags "-s -w \
+      -X github.com/warenik/gophkeeper/internal/buildmeta.Version=${VERSION} \
+      -X github.com/warenik/gophkeeper/internal/buildmeta.BuildDate=${BUILD_DATE} \
+      -X github.com/warenik/gophkeeper/internal/buildmeta.Commit=${COMMIT}" \
+    -o /out/gophkeeper-server ./cmd/server
+
+FROM alpine:3.21
+
+RUN adduser -D -u 10001 gophkeeper
+USER gophkeeper
+
+COPY --from=build /out/gophkeeper-server /usr/local/bin/gophkeeper-server
+
+ENTRYPOINT ["gophkeeper-server"]

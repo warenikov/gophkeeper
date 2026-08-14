@@ -22,6 +22,12 @@ var publicMethods = map[string]bool{
 	"/gophkeeper.v1.AuthService/Login":    true,
 }
 
+// ContextWithUserID возвращает контекст с записанным идентификатором
+// пользователя. Используется интерцептором после проверки токена (и в тестах).
+func ContextWithUserID(ctx context.Context, userID string) context.Context {
+	return context.WithValue(ctx, userIDKey, userID)
+}
+
 // UserIDFromContext возвращает идентификатор авторизованного пользователя,
 // помещённый в контекст интерцептором, и признак его наличия.
 func UserIDFromContext(ctx context.Context) (string, bool) {
@@ -53,7 +59,7 @@ func (m *TokenManager) NewUnaryInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Unauthenticated, "invalid token")
 		}
 
-		return handler(context.WithValue(ctx, userIDKey, userID), req)
+		return handler(ContextWithUserID(ctx, userID), req)
 	}
 }
 

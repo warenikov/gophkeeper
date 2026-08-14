@@ -1,8 +1,12 @@
 # GophKeeper — локальный стек для разработки и демонстрации.
 #
-# В Спринте 0 поднимается только PostgreSQL. Сервис `server` (и применение
-# миграций) добавляется в Спринте 1, после чего `docker compose up` будет
-# разворачивать всю систему одной командой, как требует ТЗ.
+# `docker compose -f deployments/docker-compose.yml up` разворачивает PostgreSQL
+# и сервер одной командой. Сервер применяет миграции при старте.
+#
+# name задаёт имя проекта (стека), иначе Compose берёт его из имени папки
+# (deployments). Сети/тома получают префикс gophkeeper_.
+name: gophkeeper
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -21,6 +25,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  server:
+    build:
+      context: ..
+      dockerfile: deployments/Dockerfile.server
+    container_name: gophkeeper-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      GOPHKEEPER_GRPC_ADDRESS: ":8081"
+      GOPHKEEPER_DATABASE_DSN: "postgres://${POSTGRES_USER:-gophkeeper}:${POSTGRES_PASSWORD:-gophkeeper}@postgres:5432/${POSTGRES_DB:-gophkeeper}?sslmode=disable"
+      GOPHKEEPER_JWT_SECRET: "${GOPHKEEPER_JWT_SECRET:-change-me-in-production}"
+    ports:
+      - "${GOPHKEEPER_GRPC_PORT:-8081}:8081"
 
 volumes:
   pgdata:

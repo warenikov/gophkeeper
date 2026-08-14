@@ -50,10 +50,16 @@ run-server:
 test:
 	go test -race ./...
 
-## cover: run tests and report total coverage
+# Пакеты, исключаемые из измерения покрытия: сгенерированный код (pb),
+# точки входа (cmd) и БД-слой (покрывается интеграционными тестами).
+COVER_EXCLUDE := /internal/pb|/cmd/|/internal/server/storage/postgres
+
+## cover: run tests and report business-logic coverage (excludes generated/cmd/db)
 .PHONY: cover
 cover:
-	go test -race -coverprofile=coverage.out -covermode=atomic ./...
+	go test -race -covermode=atomic \
+		-coverpkg=$$(go list ./... | grep -vE '$(COVER_EXCLUDE)' | paste -sd, -) \
+		-coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out | tail -n 1
 
 ## cover-html: open the HTML coverage report
