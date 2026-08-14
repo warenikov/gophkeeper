@@ -17,7 +17,38 @@ func newAddCmd() *cobra.Command {
 		Use:   "add",
 		Short: "Добавить новую запись",
 	}
-	cmd.AddCommand(newAddLoginPasswordCmd(), newAddTextCmd(), newAddCardCmd(), newAddBinaryCmd())
+	cmd.AddCommand(
+		newAddLoginPasswordCmd(), newAddTextCmd(), newAddCardCmd(),
+		newAddBinaryCmd(), newAddOTPCmd(),
+	)
+	return cmd
+}
+
+// newAddOTPCmd — добавление TOTP-секрета (для генерации одноразовых кодов).
+func newAddOTPCmd() *cobra.Command {
+	var name, secret, issuer, account, meta string
+
+	cmd := &cobra.Command{
+		Use:   "otp",
+		Short: "Добавить TOTP-секрет (одноразовые пароли)",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			plaintext, err := payload.EncodeOTP(payload.OTP{
+				Secret: secret, Issuer: issuer, Account: account,
+			})
+			if err != nil {
+				return err
+			}
+			return createEncrypted(cmd, pb.SecretType_SECRET_TYPE_OTP, name, meta, plaintext)
+		},
+	}
+
+	cmd.Flags().StringVar(&name, "name", "", "название записи")
+	cmd.Flags().StringVar(&secret, "secret", "", "секрет TOTP в base32")
+	cmd.Flags().StringVar(&issuer, "issuer", "", "издатель (например, GitHub)")
+	cmd.Flags().StringVar(&account, "account", "", "аккаунт")
+	cmd.Flags().StringVar(&meta, "meta", "", "произвольная метаинформация (не шифруется)")
+	requireFlags(cmd, "name", "secret")
+
 	return cmd
 }
 

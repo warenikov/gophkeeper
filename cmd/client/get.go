@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 
 	"github.com/warenik/gophkeeper/internal/client/cache"
 	"github.com/warenik/gophkeeper/internal/client/cryptobox"
+	"github.com/warenik/gophkeeper/internal/client/otp"
 	"github.com/warenik/gophkeeper/internal/client/payload"
 	"github.com/warenik/gophkeeper/internal/pb"
 )
@@ -105,6 +107,22 @@ func printSecret(cmd *cobra.Command, secret *pb.Secret, plaintext []byte, outFil
 		fmt.Fprintf(out, "Держатель: %s\n", c.Holder)
 		fmt.Fprintf(out, "Срок:   %s\n", c.Expiry)
 		fmt.Fprintf(out, "CVV:    %s\n", c.CVV)
+	case pb.SecretType_SECRET_TYPE_OTP:
+		o, err := payload.DecodeOTP(plaintext)
+		if err != nil {
+			return err
+		}
+		if o.Issuer != "" {
+			fmt.Fprintf(out, "Издатель: %s\n", o.Issuer)
+		}
+		if o.Account != "" {
+			fmt.Fprintf(out, "Аккаунт: %s\n", o.Account)
+		}
+		code, remaining, err := otp.Code(o.Secret, time.Now())
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(out, "Код:    %s (действует ещё %d с)\n", code, remaining)
 	case pb.SecretType_SECRET_TYPE_BINARY:
 		return writeBinary(cmd, plaintext, outFile)
 	default:

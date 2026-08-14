@@ -39,6 +39,7 @@ const (
 	SecretTypeText          SecretType = 2
 	SecretTypeCard          SecretType = 3
 	SecretTypeBinary        SecretType = 4
+	SecretTypeOTP           SecretType = 5
 )
 
 // Secret — приватная запись владельца. EncryptedPayload зашифрован на клиенте;

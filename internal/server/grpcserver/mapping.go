@@ -40,6 +40,8 @@ func toProtoType(t model.SecretType) pb.SecretType {
 		return pb.SecretType_SECRET_TYPE_CARD
 	case model.SecretTypeBinary:
 		return pb.SecretType_SECRET_TYPE_BINARY
+	case model.SecretTypeOTP:
+		return pb.SecretType_SECRET_TYPE_OTP
 	default:
 		return pb.SecretType_SECRET_TYPE_UNSPECIFIED
 	}
@@ -56,6 +58,8 @@ func toModelType(t pb.SecretType) model.SecretType {
 		return model.SecretTypeCard
 	case pb.SecretType_SECRET_TYPE_BINARY:
 		return model.SecretTypeBinary
+	case pb.SecretType_SECRET_TYPE_OTP:
+		return model.SecretTypeOTP
 	default:
 		return model.SecretTypeUnspecified
 	}

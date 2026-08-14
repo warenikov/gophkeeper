@@ -81,7 +81,7 @@ func (s *Secret) Sync(ctx context.Context, ownerID string, sinceRevision int64) 
 func validate(secret model.Secret) error {
 	switch secret.Type {
 	case model.SecretTypeLoginPassword, model.SecretTypeText,
-		model.SecretTypeCard, model.SecretTypeBinary:
+		model.SecretTypeCard, model.SecretTypeBinary, model.SecretTypeOTP:
 		// поддерживаемые типы
 	default:
 		return fmt.Errorf("%w: unsupported secret type", model.ErrValidation)

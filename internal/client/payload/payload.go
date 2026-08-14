@@ -57,6 +57,32 @@ func DecodeCard(data []byte) (Card, error) {
 	return c, nil
 }
 
+// OTP — полезная нагрузка записи типа «одноразовый пароль» (TOTP). Хранится
+// секрет-seed (base32) и опциональные метки issuer/account.
+type OTP struct {
+	Secret  string `json:"secret"` //nolint:gosec // это поле полезной нагрузки (seed TOTP); шифруется перед отправкой
+	Issuer  string `json:"issuer,omitempty"`
+	Account string `json:"account,omitempty"`
+}
+
+// EncodeOTP сериализует данные OTP в JSON.
+func EncodeOTP(o OTP) ([]byte, error) {
+	data, err := json.Marshal(o)
+	if err != nil {
+		return nil, fmt.Errorf("payload: marshal otp: %w", err)
+	}
+	return data, nil
+}
+
+// DecodeOTP восстанавливает данные OTP из JSON.
+func DecodeOTP(data []byte) (OTP, error) {
+	var o OTP
+	if err := json.Unmarshal(data, &o); err != nil {
+		return OTP{}, fmt.Errorf("payload: unmarshal otp: %w", err)
+	}
+	return o, nil
+}
+
 // EncodeText представляет произвольный текст как байты полезной нагрузки.
 func EncodeText(text string) []byte {
 	return []byte(text)

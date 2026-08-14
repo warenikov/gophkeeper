@@ -39,7 +39,7 @@ func TestToGRPCError(t *testing.T) {
 func TestTypeMappingRoundtrip(t *testing.T) {
 	types := []model.SecretType{
 		model.SecretTypeLoginPassword, model.SecretTypeText,
-		model.SecretTypeCard, model.SecretTypeBinary,
+		model.SecretTypeCard, model.SecretTypeBinary, model.SecretTypeOTP,
 	}
 	for _, mt := range types {
 		if got := toModelType(toProtoType(mt)); got != mt {

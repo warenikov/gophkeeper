@@ -84,6 +84,8 @@ func typeName(t pb.SecretType) string {
 		return "карта"
 	case pb.SecretType_SECRET_TYPE_BINARY:
 		return "бинарные"
+	case pb.SecretType_SECRET_TYPE_OTP:
+		return "OTP"
 	default:
 		return "неизвестно"
 	}
