@@ -10,7 +10,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	_ "github.com/jackc/pgx/v5/stdlib" // регистрирует драйвер database/sql "pgx"
 
-	"github.com/warenik/gophkeeper/migrations"
+	"github.com/warenikov/gophkeeper/migrations"
 )
 
 // Migrate применяет все встроенные миграции к базе данных по строке

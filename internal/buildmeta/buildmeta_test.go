@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/warenik/gophkeeper/internal/buildmeta"
+	"github.com/warenikov/gophkeeper/internal/buildmeta"
 )
 
 // TestStringContainsAllFields проверяет, что String возвращает строку со всеми

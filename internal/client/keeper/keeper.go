@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/warenik/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/pb"
 )
 
 // Client — подключение к серверу GophKeeper.

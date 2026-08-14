@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/warenik/gophkeeper/internal/server/model"
-	"github.com/warenik/gophkeeper/internal/server/service"
+	"github.com/warenikov/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/server/service"
 )
 
 // mockSecretStore — конфигурируемая заглушка хранилища записей.

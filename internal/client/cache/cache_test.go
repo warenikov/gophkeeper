@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/warenik/gophkeeper/internal/client/cache"
+	"github.com/warenikov/gophkeeper/internal/client/cache"
 )
 
 func isolate(t *testing.T) {

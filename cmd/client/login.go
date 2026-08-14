@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/warenik/gophkeeper/internal/client/keeper"
-	"github.com/warenik/gophkeeper/internal/client/session"
+	"github.com/warenikov/gophkeeper/internal/client/keeper"
+	"github.com/warenikov/gophkeeper/internal/client/session"
 )
 
 // newLoginCmd возвращает команду аутентификации существующего пользователя.

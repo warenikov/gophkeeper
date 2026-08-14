@@ -6,8 +6,8 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/warenik/gophkeeper/internal/client/cache"
-	"github.com/warenik/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/client/cache"
+	"github.com/warenikov/gophkeeper/internal/pb"
 )
 
 // newSyncCmd возвращает команду синхронизации локального кэша с сервером.

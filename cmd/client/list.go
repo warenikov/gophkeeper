@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/warenik/gophkeeper/internal/client/cache"
-	"github.com/warenik/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/client/cache"
+	"github.com/warenikov/gophkeeper/internal/pb"
 )
 
 // newListCmd возвращает команду вывода списка записей пользователя. При

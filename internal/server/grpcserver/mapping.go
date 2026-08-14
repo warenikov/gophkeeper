@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/warenik/gophkeeper/internal/pb"
-	"github.com/warenik/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/server/model"
 )
 
 // toProtoSecret преобразует доменную запись в protobuf-представление.

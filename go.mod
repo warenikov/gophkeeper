@@ -1,4 +1,4 @@
-module github.com/warenik/gophkeeper
+module github.com/warenikov/gophkeeper
 
 go 1.25.0
 

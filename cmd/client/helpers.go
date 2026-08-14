@@ -13,8 +13,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/warenik/gophkeeper/internal/client/keeper"
-	"github.com/warenik/gophkeeper/internal/client/session"
+	"github.com/warenikov/gophkeeper/internal/client/keeper"
+	"github.com/warenikov/gophkeeper/internal/client/session"
 )
 
 // requestTimeout — таймаут одного обращения к серверу.

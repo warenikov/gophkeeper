@@ -8,8 +8,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/warenik/gophkeeper/internal/server/model"
-	"github.com/warenik/gophkeeper/internal/server/storage/postgres"
+	"github.com/warenikov/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/server/storage/postgres"
 )
 
 // testPool применяет миграции, открывает пул и очищает таблицы. Тест

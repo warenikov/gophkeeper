@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/warenik/gophkeeper/internal/client/cryptobox"
+	"github.com/warenikov/gophkeeper/internal/client/cryptobox"
 )
 
 func TestDeriveKey(t *testing.T) {

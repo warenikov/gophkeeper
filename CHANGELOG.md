@@ -48,7 +48,7 @@
 - Тесты, включая end-to-end через bufconn; покрытие бизнес-логики ~81%.
 
 ### Added (Спринт 0 — фундамент)
-- Каркас проекта: Go-модуль `github.com/warenik/gophkeeper`, раскладка
+- Каркас проекта: Go-модуль `github.com/warenikov/gophkeeper`, раскладка
   `cmd/{server,client}`, `internal/buildmeta`.
 - Точки входа сервера (slog + graceful shutdown) и клиента (команда `version`).
 - Проброс версии/даты сборки/commit через `-ldflags`.

@@ -13,8 +13,8 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 
-	"github.com/warenik/gophkeeper/internal/pb"
-	"github.com/warenik/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
 )
 
 // Server оборачивает gRPC-сервер GophKeeper с его слушателем и логированием.

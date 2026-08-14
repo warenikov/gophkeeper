@@ -8,11 +8,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/warenik/gophkeeper/internal/client/cache"
-	"github.com/warenik/gophkeeper/internal/client/cryptobox"
-	"github.com/warenik/gophkeeper/internal/client/otp"
-	"github.com/warenik/gophkeeper/internal/client/payload"
-	"github.com/warenik/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/client/cache"
+	"github.com/warenikov/gophkeeper/internal/client/cryptobox"
+	"github.com/warenikov/gophkeeper/internal/client/otp"
+	"github.com/warenikov/gophkeeper/internal/client/payload"
+	"github.com/warenikov/gophkeeper/internal/pb"
 )
 
 // newGetCmd возвращает команду получения и расшифровки одной записи.

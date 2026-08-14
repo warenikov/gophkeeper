@@ -15,12 +15,12 @@ import (
 
 	"google.golang.org/grpc/credentials"
 
-	"github.com/warenik/gophkeeper/internal/buildmeta"
-	"github.com/warenik/gophkeeper/internal/server/auth"
-	"github.com/warenik/gophkeeper/internal/server/config"
-	"github.com/warenik/gophkeeper/internal/server/grpcserver"
-	"github.com/warenik/gophkeeper/internal/server/service"
-	"github.com/warenik/gophkeeper/internal/server/storage/postgres"
+	"github.com/warenikov/gophkeeper/internal/buildmeta"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/server/config"
+	"github.com/warenikov/gophkeeper/internal/server/grpcserver"
+	"github.com/warenikov/gophkeeper/internal/server/service"
+	"github.com/warenikov/gophkeeper/internal/server/storage/postgres"
 )
 
 func main() {

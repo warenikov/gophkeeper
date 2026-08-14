@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/warenik/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/server/model"
 )
 
 // secretStore — доступ к записям, необходимый сервису.

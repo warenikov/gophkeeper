@@ -95,7 +95,7 @@ formatters:
       simplify: true
     goimports:
       local-prefixes:
-        - github.com/warenik/gophkeeper
+        - github.com/warenikov/gophkeeper
 
 issues:
   max-issues-per-linter: 0

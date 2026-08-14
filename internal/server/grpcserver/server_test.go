@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/warenik/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
 )
 
 func discardLogger() *slog.Logger {

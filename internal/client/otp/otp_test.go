@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/warenik/gophkeeper/internal/client/otp"
+	"github.com/warenikov/gophkeeper/internal/client/otp"
 )
 
 // secretRFC — base32 от ASCII-строки "12345678901234567890" (seed SHA1 из

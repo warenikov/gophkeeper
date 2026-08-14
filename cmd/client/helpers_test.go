@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/warenik/gophkeeper/internal/client/cache"
-	"github.com/warenik/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/client/cache"
+	"github.com/warenikov/gophkeeper/internal/pb"
 )
 
 func TestTypeName(t *testing.T) {

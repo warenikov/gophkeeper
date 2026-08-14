@@ -11,11 +11,11 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 
-	"github.com/warenik/gophkeeper/internal/pb"
-	"github.com/warenik/gophkeeper/internal/server/auth"
-	"github.com/warenik/gophkeeper/internal/server/grpcserver"
-	"github.com/warenik/gophkeeper/internal/server/model"
-	"github.com/warenik/gophkeeper/internal/server/service"
+	"github.com/warenikov/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/server/grpcserver"
+	"github.com/warenikov/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/server/service"
 )
 
 // fakeUsers — потокобезопасное in-memory хранилище пользователей для теста.

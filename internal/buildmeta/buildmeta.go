@@ -13,9 +13,9 @@ import "fmt"
 // Метаданные сборки. Эти переменные переопределяются на этапе сборки так:
 //
 //	go build -ldflags "\
-//	  -X github.com/warenik/gophkeeper/internal/buildmeta.Version=v1.0.0 \
-//	  -X github.com/warenik/gophkeeper/internal/buildmeta.BuildDate=2026-07-24 \
-//	  -X github.com/warenik/gophkeeper/internal/buildmeta.Commit=abc1234"
+//	  -X github.com/warenikov/gophkeeper/internal/buildmeta.Version=v1.0.0 \
+//	  -X github.com/warenikov/gophkeeper/internal/buildmeta.BuildDate=2026-07-24 \
+//	  -X github.com/warenikov/gophkeeper/internal/buildmeta.Commit=abc1234"
 var (
 	// Version — семантическая версия сборки (например, "v1.0.0").
 	Version = "dev"

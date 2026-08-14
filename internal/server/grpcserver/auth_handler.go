@@ -3,7 +3,7 @@ package grpcserver
 import (
 	"context"
 
-	"github.com/warenik/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/pb"
 )
 
 // authService — бизнес-операции аутентификации, нужные обработчику.

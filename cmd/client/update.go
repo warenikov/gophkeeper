@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/warenik/gophkeeper/internal/client/cryptobox"
-	"github.com/warenik/gophkeeper/internal/client/payload"
+	"github.com/warenikov/gophkeeper/internal/client/cryptobox"
+	"github.com/warenikov/gophkeeper/internal/client/payload"
 )
 
 // newUpdateCmd возвращает родительскую команду обновления записей.

@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/warenik/gophkeeper/internal/buildmeta"
+	"github.com/warenikov/gophkeeper/internal/buildmeta"
 )
 
 // newVersionCmd возвращает команду вывода версии и даты сборки.

@@ -3,7 +3,7 @@ package payload_test
 import (
 	"testing"
 
-	"github.com/warenik/gophkeeper/internal/client/payload"
+	"github.com/warenikov/gophkeeper/internal/client/payload"
 )
 
 func TestLoginPasswordRoundtrip(t *testing.T) {

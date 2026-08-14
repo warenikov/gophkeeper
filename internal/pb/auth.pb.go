@@ -190,7 +190,7 @@ const file_gophkeeper_v1_auth_proto_rawDesc = "" +
 	"\x05token\x18\x01 \x01(\tR\x05token2\x99\x01\n" +
 	"\vAuthService\x12G\n" +
 	"\bRegister\x12\x1e.gophkeeper.v1.RegisterRequest\x1a\x1b.gophkeeper.v1.AuthResponse\x12A\n" +
-	"\x05Login\x12\x1b.gophkeeper.v1.LoginRequest\x1a\x1b.gophkeeper.v1.AuthResponseB.Z,github.com/warenik/gophkeeper/internal/pb;pbb\x06proto3"
+	"\x05Login\x12\x1b.gophkeeper.v1.LoginRequest\x1a\x1b.gophkeeper.v1.AuthResponseB0Z.github.com/warenikov/gophkeeper/internal/pb;pbb\x06proto3"
 
 var (
 	file_gophkeeper_v1_auth_proto_rawDescOnce sync.Once

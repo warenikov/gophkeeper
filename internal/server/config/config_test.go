@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/warenik/gophkeeper/internal/server/config"
+	"github.com/warenikov/gophkeeper/internal/server/config"
 )
 
 func TestLoadSuccessWithDefaults(t *testing.T) {

@@ -720,7 +720,7 @@ const file_gophkeeper_v1_secrets_proto_rawDesc = "" +
 	"\x03Get\x12\x1f.gophkeeper.v1.GetSecretRequest\x1a\x15.gophkeeper.v1.Secret\x12C\n" +
 	"\x06Update\x12\".gophkeeper.v1.UpdateSecretRequest\x1a\x15.gophkeeper.v1.Secret\x12Q\n" +
 	"\x06Delete\x12\".gophkeeper.v1.DeleteSecretRequest\x1a#.gophkeeper.v1.DeleteSecretResponse\x12?\n" +
-	"\x04Sync\x12\x1a.gophkeeper.v1.SyncRequest\x1a\x1b.gophkeeper.v1.SyncResponseB.Z,github.com/warenik/gophkeeper/internal/pb;pbb\x06proto3"
+	"\x04Sync\x12\x1a.gophkeeper.v1.SyncRequest\x1a\x1b.gophkeeper.v1.SyncResponseB0Z.github.com/warenikov/gophkeeper/internal/pb;pbb\x06proto3"
 
 var (
 	file_gophkeeper_v1_secrets_proto_rawDescOnce sync.Once

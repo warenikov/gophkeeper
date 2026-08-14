@@ -6,9 +6,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/warenik/gophkeeper/internal/client/cryptobox"
-	"github.com/warenik/gophkeeper/internal/client/payload"
-	"github.com/warenik/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/client/cryptobox"
+	"github.com/warenikov/gophkeeper/internal/client/payload"
+	"github.com/warenikov/gophkeeper/internal/pb"
 )
 
 // newAddCmd возвращает родительскую команду добавления записей.

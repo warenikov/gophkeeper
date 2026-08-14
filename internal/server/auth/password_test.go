@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/warenik/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
 )
 
 func TestHashAndCheckPassword(t *testing.T) {

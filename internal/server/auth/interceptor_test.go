@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	"github.com/warenik/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
 )
 
 func TestContextUserIDRoundtrip(t *testing.T) {

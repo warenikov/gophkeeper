@@ -7,7 +7,7 @@ VERSION   ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo de
 BUILD_DATE ?= $(shell date -u +%Y-%m-%d)
 COMMIT    ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
 
-PKG        := github.com/warenik/gophkeeper/internal/buildmeta
+PKG        := github.com/warenikov/gophkeeper/internal/buildmeta
 LDFLAGS    := -s -w \
 	-X $(PKG).Version=$(VERSION) \
 	-X $(PKG).BuildDate=$(BUILD_DATE) \
@@ -92,8 +92,8 @@ lint:
 proto:
 	protoc \
 		--proto_path=proto \
-		--go_out=. --go_opt=module=github.com/warenik/gophkeeper \
-		--go-grpc_out=. --go-grpc_opt=module=github.com/warenik/gophkeeper \
+		--go_out=. --go_opt=module=github.com/warenikov/gophkeeper \
+		--go-grpc_out=. --go-grpc_opt=module=github.com/warenikov/gophkeeper \
 		proto/gophkeeper/v1/*.proto
 
 ## tidy: tidy go.mod / go.sum

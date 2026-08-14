@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/warenik/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/server/model"
 )
 
 // uniqueViolation — SQLSTATE-код нарушения уникальности PostgreSQL.

@@ -6,9 +6,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/warenik/gophkeeper/internal/pb"
-	"github.com/warenik/gophkeeper/internal/server/auth"
-	"github.com/warenik/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/server/model"
 )
 
 // secretService — бизнес-операции над записями, нужные обработчику.

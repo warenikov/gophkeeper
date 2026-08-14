@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/warenik/gophkeeper/internal/server/auth"
-	"github.com/warenik/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/server/auth"
+	"github.com/warenikov/gophkeeper/internal/server/model"
 )
 
 // userStore — доступ к пользователям, необходимый сервису аутентификации.

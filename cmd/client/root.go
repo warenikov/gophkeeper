@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/warenik/gophkeeper/internal/buildmeta"
+	"github.com/warenikov/gophkeeper/internal/buildmeta"
 )
 
 // defaultAddress — адрес сервера по умолчанию.

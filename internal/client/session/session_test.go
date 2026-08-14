@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/warenik/gophkeeper/internal/client/session"
+	"github.com/warenikov/gophkeeper/internal/client/session"
 )
 
 // isolate перенаправляет каталог конфигурации во временную директорию теста.

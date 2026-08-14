@@ -16,9 +16,9 @@ builds:
     goarch: [amd64, arm64]
     ldflags:
       - -s -w
-      - -X github.com/warenik/gophkeeper/internal/buildmeta.Version={{.Version}}
-      - -X github.com/warenik/gophkeeper/internal/buildmeta.BuildDate={{.Date}}
-      - -X github.com/warenik/gophkeeper/internal/buildmeta.Commit={{.ShortCommit}}
+      - -X github.com/warenikov/gophkeeper/internal/buildmeta.Version={{.Version}}
+      - -X github.com/warenikov/gophkeeper/internal/buildmeta.BuildDate={{.Date}}
+      - -X github.com/warenikov/gophkeeper/internal/buildmeta.Commit={{.ShortCommit}}
 
   - id: server
     main: ./cmd/server
@@ -29,9 +29,9 @@ builds:
     goarch: [amd64, arm64]
     ldflags:
       - -s -w
-      - -X github.com/warenik/gophkeeper/internal/buildmeta.Version={{.Version}}
-      - -X github.com/warenik/gophkeeper/internal/buildmeta.BuildDate={{.Date}}
-      - -X github.com/warenik/gophkeeper/internal/buildmeta.Commit={{.ShortCommit}}
+      - -X github.com/warenikov/gophkeeper/internal/buildmeta.Version={{.Version}}
+      - -X github.com/warenikov/gophkeeper/internal/buildmeta.BuildDate={{.Date}}
+      - -X github.com/warenikov/gophkeeper/internal/buildmeta.Commit={{.ShortCommit}}
 
 archives:
   - format: tar.gz

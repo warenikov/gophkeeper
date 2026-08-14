@@ -15,9 +15,9 @@ ARG COMMIT=unknown
 
 RUN CGO_ENABLED=0 go build \
     -ldflags "-s -w \
-      -X github.com/warenik/gophkeeper/internal/buildmeta.Version=${VERSION} \
-      -X github.com/warenik/gophkeeper/internal/buildmeta.BuildDate=${BUILD_DATE} \
-      -X github.com/warenik/gophkeeper/internal/buildmeta.Commit=${COMMIT}" \
+      -X github.com/warenikov/gophkeeper/internal/buildmeta.Version=${VERSION} \
+      -X github.com/warenikov/gophkeeper/internal/buildmeta.BuildDate=${BUILD_DATE} \
+      -X github.com/warenikov/gophkeeper/internal/buildmeta.Commit=${COMMIT}" \
     -o /out/gophkeeper-server ./cmd/server
 
 FROM alpine:3.21

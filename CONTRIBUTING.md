@@ -13,7 +13,7 @@
 ## Быстрый старт
 
 ```bash
-git clone https://github.com/warenik/gophkeeper.git
+git clone https://github.com/warenikov/gophkeeper.git
 cd gophkeeper
 cp .env.example .env
 make up        # поднять инфраструктуру (PostgreSQL)

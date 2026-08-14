@@ -4,7 +4,7 @@ syntax = "proto3";
 // GophKeeper. Файл auth.proto отвечает за регистрацию и аутентификацию.
 package gophkeeper.v1;
 
-option go_package = "github.com/warenik/gophkeeper/internal/pb;pb";
+option go_package = "github.com/warenikov/gophkeeper/internal/pb;pb";
 
 // RegisterRequest — запрос регистрации нового пользователя.
 message RegisterRequest {
