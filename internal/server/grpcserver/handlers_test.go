@@ -33,6 +33,7 @@ type mockSecretSvc struct {
 	getFn    func(ctx context.Context, ownerID, id string) (model.Secret, error)
 	updateFn func(ctx context.Context, ownerID string, s model.Secret, v int64) (model.Secret, error)
 	deleteFn func(ctx context.Context, ownerID, id string) error
+	syncFn   func(ctx context.Context, ownerID string, since int64) ([]model.Secret, int64, error)
 }
 
 func (m mockSecretSvc) Create(ctx context.Context, ownerID string, s model.Secret) (model.Secret, error) {
@@ -53,6 +54,10 @@ func (m mockSecretSvc) Update(ctx context.Context, ownerID string, s model.Secre
 
 func (m mockSecretSvc) Delete(ctx context.Context, ownerID, id string) error {
 	return m.deleteFn(ctx, ownerID, id)
+}
+
+func (m mockSecretSvc) Sync(ctx context.Context, ownerID string, since int64) ([]model.Secret, int64, error) {
+	return m.syncFn(ctx, ownerID, since)
 }
 
 // --- Тесты ---

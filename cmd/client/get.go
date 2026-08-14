@@ -1,11 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/warenik/gophkeeper/internal/client/cache"
 	"github.com/warenik/gophkeeper/internal/client/cryptobox"
 	"github.com/warenik/gophkeeper/internal/client/payload"
 	"github.com/warenik/gophkeeper/internal/pb"
@@ -36,7 +38,14 @@ func newGetCmd() *cobra.Command {
 
 			secret, err := client.Get(ctx, args[0])
 			if err != nil {
-				return err
+				if !isOffline(err) {
+					return err
+				}
+				// Сервер недоступен — читаем из локального кэша.
+				secret, err = getFromCache(sess.Login, args[0])
+				if err != nil {
+					return err
+				}
 			}
 
 			key := cryptobox.DeriveKey(masterPassword, sess.Login)
@@ -51,6 +60,19 @@ func newGetCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&outFile, "out", "", "файл для сохранения бинарных данных")
 	return cmd
+}
+
+// getFromCache возвращает запись из локального кэша (офлайн-режим).
+func getFromCache(login, id string) (*pb.Secret, error) {
+	local, err := cache.Load(login)
+	if err != nil {
+		return nil, err
+	}
+	s, ok := local.Secrets[id]
+	if !ok {
+		return nil, errors.New("запись не найдена в локальном кэше (сервер недоступен)")
+	}
+	return cacheToProto(s), nil
 }
 
 // printSecret выводит запись: метаданные в открытом виде и расшифрованную

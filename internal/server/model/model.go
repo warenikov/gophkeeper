@@ -53,4 +53,8 @@ type Secret struct {
 	Version          int64
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
+	// Deleted — признак тумбстона (мягкое удаление) для синхронизации.
+	Deleted bool
+	// Revision — монотонный курсор изменений для pull-синхронизации.
+	Revision int64
 }

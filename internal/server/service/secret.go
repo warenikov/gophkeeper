@@ -14,6 +14,7 @@ type secretStore interface {
 	GetByID(ctx context.Context, ownerID, id string) (model.Secret, error)
 	Update(ctx context.Context, s model.Secret, expectedVersion int64) (model.Secret, error)
 	Delete(ctx context.Context, ownerID, id string) error
+	SyncByOwner(ctx context.Context, ownerID string, sinceRevision int64) ([]model.Secret, int64, error)
 }
 
 // Secret реализует операции над приватными записями.
@@ -68,6 +69,12 @@ func (s *Secret) Delete(ctx context.Context, ownerID, id string) error {
 		return fmt.Errorf("%w: id is required", model.ErrValidation)
 	}
 	return s.store.Delete(ctx, ownerID, id)
+}
+
+// Sync возвращает изменения владельца с указанной ревизии (включая тумбстоны) и
+// новый курсор для следующей синхронизации.
+func (s *Secret) Sync(ctx context.Context, ownerID string, sinceRevision int64) ([]model.Secret, int64, error) {
+	return s.store.SyncByOwner(ctx, ownerID, sinceRevision)
 }
 
 // validate проверяет тип и содержимое записи (используется при создании).

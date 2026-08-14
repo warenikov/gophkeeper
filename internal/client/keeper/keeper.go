@@ -109,6 +109,16 @@ func (c *Client) Delete(ctx context.Context, id string) error {
 	return err
 }
 
+// Sync возвращает изменения (включая тумбстоны) с указанной ревизии и новый
+// курсор для следующей синхронизации.
+func (c *Client) Sync(ctx context.Context, sinceRevision int64) ([]*pb.Secret, int64, error) {
+	resp, err := c.secrets.Sync(ctx, &pb.SyncRequest{SinceRevision: sinceRevision})
+	if err != nil {
+		return nil, 0, err
+	}
+	return resp.GetSecrets(), resp.GetRevision(), nil
+}
+
 // tokenInterceptor добавляет заголовок authorization с bearer-токеном к каждому
 // исходящему unary-вызову.
 func tokenInterceptor(token string) grpc.UnaryClientInterceptor {

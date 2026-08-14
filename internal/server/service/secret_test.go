@@ -16,6 +16,7 @@ type mockSecretStore struct {
 	getFn    func(ctx context.Context, ownerID, id string) (model.Secret, error)
 	updateFn func(ctx context.Context, s model.Secret, expected int64) (model.Secret, error)
 	deleteFn func(ctx context.Context, ownerID, id string) error
+	syncFn   func(ctx context.Context, ownerID string, since int64) ([]model.Secret, int64, error)
 }
 
 func (m mockSecretStore) Create(ctx context.Context, s model.Secret) (model.Secret, error) {
@@ -36,6 +37,10 @@ func (m mockSecretStore) Update(ctx context.Context, s model.Secret, expected in
 
 func (m mockSecretStore) Delete(ctx context.Context, ownerID, id string) error {
 	return m.deleteFn(ctx, ownerID, id)
+}
+
+func (m mockSecretStore) SyncByOwner(ctx context.Context, ownerID string, since int64) ([]model.Secret, int64, error) {
+	return m.syncFn(ctx, ownerID, since)
 }
 
 // validSecret возвращает корректную запись для тестов создания.

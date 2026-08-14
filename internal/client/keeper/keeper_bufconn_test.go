@@ -52,14 +52,18 @@ type fakeSecrets struct {
 	mu   sync.Mutex
 	byID map[string]model.Secret
 	seq  int
+	rev  int64
 }
 
 func (f *fakeSecrets) Create(_ context.Context, s model.Secret) (model.Secret, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	f.seq++
+	f.rev++
 	s.ID = string(rune('a' + f.seq))
 	s.Version = 1
+	s.Revision = f.rev
+	s.Deleted = false
 	s.CreatedAt = time.Now()
 	s.UpdatedAt = s.CreatedAt
 	f.byID[s.ID] = s
@@ -71,7 +75,7 @@ func (f *fakeSecrets) ListByOwner(_ context.Context, ownerID string) ([]model.Se
 	defer f.mu.Unlock()
 	out := []model.Secret{}
 	for _, s := range f.byID {
-		if s.OwnerID == ownerID {
+		if s.OwnerID == ownerID && !s.Deleted {
 			out = append(out, s)
 		}
 	}
@@ -82,7 +86,7 @@ func (f *fakeSecrets) GetByID(_ context.Context, ownerID, id string) (model.Secr
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	s, ok := f.byID[id]
-	if !ok || s.OwnerID != ownerID {
+	if !ok || s.OwnerID != ownerID || s.Deleted {
 		return model.Secret{}, model.ErrNotFound
 	}
 	return s, nil
@@ -92,16 +96,18 @@ func (f *fakeSecrets) Update(_ context.Context, s model.Secret, expected int64) 
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	cur, ok := f.byID[s.ID]
-	if !ok || cur.OwnerID != s.OwnerID {
+	if !ok || cur.OwnerID != s.OwnerID || cur.Deleted {
 		return model.Secret{}, model.ErrNotFound
 	}
 	if cur.Version != expected {
 		return model.Secret{}, model.ErrVersionConflict
 	}
+	f.rev++
 	cur.Name = s.Name
 	cur.Metadata = s.Metadata
 	cur.EncryptedPayload = s.EncryptedPayload
 	cur.Version++
+	cur.Revision = f.rev
 	cur.UpdatedAt = time.Now()
 	f.byID[s.ID] = cur
 	return cur, nil
@@ -111,11 +117,31 @@ func (f *fakeSecrets) Delete(_ context.Context, ownerID, id string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	s, ok := f.byID[id]
-	if !ok || s.OwnerID != ownerID {
+	if !ok || s.OwnerID != ownerID || s.Deleted {
 		return model.ErrNotFound
 	}
-	delete(f.byID, id)
+	f.rev++
+	s.Deleted = true
+	s.Version++
+	s.Revision = f.rev
+	f.byID[id] = s
 	return nil
+}
+
+func (f *fakeSecrets) SyncByOwner(_ context.Context, ownerID string, since int64) ([]model.Secret, int64, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	out := []model.Secret{}
+	cursor := since
+	for _, s := range f.byID {
+		if s.OwnerID == ownerID && s.Revision > since {
+			out = append(out, s)
+			if s.Revision > cursor {
+				cursor = s.Revision
+			}
+		}
+	}
+	return out, cursor, nil
 }
 
 // startServer поднимает gRPC-сервер с реальными хендлерами и in-memory
@@ -266,6 +292,55 @@ func TestDialAndClose(t *testing.T) {
 		if err := c.Close(); err != nil {
 			t.Errorf("Close(token=%q): %v", token, err)
 		}
+	}
+}
+
+// TestSync проверяет pull-синхронизацию: создание виден через Sync, удаление
+// приходит тумбстоном.
+func TestSync(t *testing.T) {
+	dialer := startServer(t)
+	ctx := context.Background()
+
+	token, err := newKeeper(t, dialer, "").Register(ctx, "dave", "pw")
+	if err != nil {
+		t.Fatalf("Register: %v", err)
+	}
+	c := newKeeper(t, dialer, token)
+
+	// Изначально изменений нет.
+	changes, rev0, err := c.Sync(ctx, 0)
+	if err != nil {
+		t.Fatalf("Sync: %v", err)
+	}
+	if len(changes) != 0 {
+		t.Errorf("ожидалось 0 изменений, получено %d", len(changes))
+	}
+
+	// Создаём две записи.
+	s1, _ := c.Create(ctx, pb.SecretType_SECRET_TYPE_TEXT, "a", "", []byte("x"))
+	c.Create(ctx, pb.SecretType_SECRET_TYPE_TEXT, "b", "", []byte("y"))
+
+	changes, rev1, err := c.Sync(ctx, rev0)
+	if err != nil {
+		t.Fatalf("Sync: %v", err)
+	}
+	if len(changes) != 2 {
+		t.Fatalf("ожидалось 2 изменения, получено %d", len(changes))
+	}
+	if rev1 <= rev0 {
+		t.Errorf("ревизия не выросла: %d → %d", rev0, rev1)
+	}
+
+	// Удаляем одну — приходит тумбстон.
+	if err := c.Delete(ctx, s1.GetId()); err != nil {
+		t.Fatalf("Delete: %v", err)
+	}
+	changes, _, err = c.Sync(ctx, rev1)
+	if err != nil {
+		t.Fatalf("Sync: %v", err)
+	}
+	if len(changes) != 1 || !changes[0].GetDeleted() {
+		t.Errorf("ожидался один тумбстон, получено %+v", changes)
 	}
 }
 

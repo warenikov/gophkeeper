@@ -95,9 +95,13 @@ type Secret struct {
 	// encrypted_payload — полезная нагрузка, зашифрованная на клиенте.
 	EncryptedPayload []byte `protobuf:"bytes,5,opt,name=encrypted_payload,json=encryptedPayload,proto3" json:"encrypted_payload,omitempty"`
 	// version — версия записи для оптимистичной блокировки и синхронизации.
-	Version       int64                  `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Version   int64                  `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	// deleted — тумбстон: запись удалена (для синхронизации клиентов).
+	Deleted bool `protobuf:"varint,9,opt,name=deleted,proto3" json:"deleted,omitempty"`
+	// revision — монотонный курсор изменения записи.
+	Revision      int64 `protobuf:"varint,10,opt,name=revision,proto3" json:"revision,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -186,6 +190,20 @@ func (x *Secret) GetUpdatedAt() *timestamppb.Timestamp {
 		return x.UpdatedAt
 	}
 	return nil
+}
+
+func (x *Secret) GetDeleted() bool {
+	if x != nil {
+		return x.Deleted
+	}
+	return false
+}
+
+func (x *Secret) GetRevision() int64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
 }
 
 // CreateSecretRequest — создание новой записи.
@@ -544,11 +562,109 @@ func (*DeleteSecretResponse) Descriptor() ([]byte, []int) {
 	return file_gophkeeper_v1_secrets_proto_rawDescGZIP(), []int{7}
 }
 
+// SyncRequest — запрос изменений начиная с указанного курсора-ревизии.
+type SyncRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SinceRevision int64                  `protobuf:"varint,1,opt,name=since_revision,json=sinceRevision,proto3" json:"since_revision,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SyncRequest) Reset() {
+	*x = SyncRequest{}
+	mi := &file_gophkeeper_v1_secrets_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SyncRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SyncRequest) ProtoMessage() {}
+
+func (x *SyncRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gophkeeper_v1_secrets_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SyncRequest.ProtoReflect.Descriptor instead.
+func (*SyncRequest) Descriptor() ([]byte, []int) {
+	return file_gophkeeper_v1_secrets_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SyncRequest) GetSinceRevision() int64 {
+	if x != nil {
+		return x.SinceRevision
+	}
+	return 0
+}
+
+// SyncResponse — изменившиеся записи (включая тумбстоны) и новый курсор.
+type SyncResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Secrets       []*Secret              `protobuf:"bytes,1,rep,name=secrets,proto3" json:"secrets,omitempty"`
+	Revision      int64                  `protobuf:"varint,2,opt,name=revision,proto3" json:"revision,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SyncResponse) Reset() {
+	*x = SyncResponse{}
+	mi := &file_gophkeeper_v1_secrets_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SyncResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SyncResponse) ProtoMessage() {}
+
+func (x *SyncResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gophkeeper_v1_secrets_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SyncResponse.ProtoReflect.Descriptor instead.
+func (*SyncResponse) Descriptor() ([]byte, []int) {
+	return file_gophkeeper_v1_secrets_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SyncResponse) GetSecrets() []*Secret {
+	if x != nil {
+		return x.Secrets
+	}
+	return nil
+}
+
+func (x *SyncResponse) GetRevision() int64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
+}
+
 var File_gophkeeper_v1_secrets_proto protoreflect.FileDescriptor
 
 const file_gophkeeper_v1_secrets_proto_rawDesc = "" +
 	"\n" +
-	"\x1bgophkeeper/v1/secrets.proto\x12\rgophkeeper.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\x02\n" +
+	"\x1bgophkeeper/v1/secrets.proto\x12\rgophkeeper.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x02\n" +
 	"\x06Secret\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12-\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x19.gophkeeper.v1.SecretTypeR\x04type\x12\x12\n" +
@@ -559,7 +675,10 @@ const file_gophkeeper_v1_secrets_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xa1\x01\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x18\n" +
+	"\adeleted\x18\t \x01(\bR\adeleted\x12\x1a\n" +
+	"\brevision\x18\n" +
+	" \x01(\x03R\brevision\"\xa1\x01\n" +
 	"\x13CreateSecretRequest\x12-\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x19.gophkeeper.v1.SecretTypeR\x04type\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1a\n" +
@@ -578,20 +697,26 @@ const file_gophkeeper_v1_secrets_proto_rawDesc = "" +
 	"\aversion\x18\x05 \x01(\x03R\aversion\"%\n" +
 	"\x13DeleteSecretRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x16\n" +
-	"\x14DeleteSecretResponse*\x8d\x01\n" +
+	"\x14DeleteSecretResponse\"4\n" +
+	"\vSyncRequest\x12%\n" +
+	"\x0esince_revision\x18\x01 \x01(\x03R\rsinceRevision\"[\n" +
+	"\fSyncResponse\x12/\n" +
+	"\asecrets\x18\x01 \x03(\v2\x15.gophkeeper.v1.SecretR\asecrets\x12\x1a\n" +
+	"\brevision\x18\x02 \x01(\x03R\brevision*\x8d\x01\n" +
 	"\n" +
 	"SecretType\x12\x1b\n" +
 	"\x17SECRET_TYPE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aSECRET_TYPE_LOGIN_PASSWORD\x10\x01\x12\x14\n" +
 	"\x10SECRET_TYPE_TEXT\x10\x02\x12\x14\n" +
 	"\x10SECRET_TYPE_CARD\x10\x03\x12\x16\n" +
-	"\x12SECRET_TYPE_BINARY\x10\x042\xfb\x02\n" +
+	"\x12SECRET_TYPE_BINARY\x10\x042\xbc\x03\n" +
 	"\x0eSecretsService\x12C\n" +
 	"\x06Create\x12\".gophkeeper.v1.CreateSecretRequest\x1a\x15.gophkeeper.v1.Secret\x12M\n" +
 	"\x04List\x12!.gophkeeper.v1.ListSecretsRequest\x1a\".gophkeeper.v1.ListSecretsResponse\x12=\n" +
 	"\x03Get\x12\x1f.gophkeeper.v1.GetSecretRequest\x1a\x15.gophkeeper.v1.Secret\x12C\n" +
 	"\x06Update\x12\".gophkeeper.v1.UpdateSecretRequest\x1a\x15.gophkeeper.v1.Secret\x12Q\n" +
-	"\x06Delete\x12\".gophkeeper.v1.DeleteSecretRequest\x1a#.gophkeeper.v1.DeleteSecretResponseB.Z,github.com/warenik/gophkeeper/internal/pb;pbb\x06proto3"
+	"\x06Delete\x12\".gophkeeper.v1.DeleteSecretRequest\x1a#.gophkeeper.v1.DeleteSecretResponse\x12?\n" +
+	"\x04Sync\x12\x1a.gophkeeper.v1.SyncRequest\x1a\x1b.gophkeeper.v1.SyncResponseB.Z,github.com/warenik/gophkeeper/internal/pb;pbb\x06proto3"
 
 var (
 	file_gophkeeper_v1_secrets_proto_rawDescOnce sync.Once
@@ -606,7 +731,7 @@ func file_gophkeeper_v1_secrets_proto_rawDescGZIP() []byte {
 }
 
 var file_gophkeeper_v1_secrets_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_gophkeeper_v1_secrets_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_gophkeeper_v1_secrets_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_gophkeeper_v1_secrets_proto_goTypes = []any{
 	(SecretType)(0),               // 0: gophkeeper.v1.SecretType
 	(*Secret)(nil),                // 1: gophkeeper.v1.Secret
@@ -617,29 +742,34 @@ var file_gophkeeper_v1_secrets_proto_goTypes = []any{
 	(*UpdateSecretRequest)(nil),   // 6: gophkeeper.v1.UpdateSecretRequest
 	(*DeleteSecretRequest)(nil),   // 7: gophkeeper.v1.DeleteSecretRequest
 	(*DeleteSecretResponse)(nil),  // 8: gophkeeper.v1.DeleteSecretResponse
-	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*SyncRequest)(nil),           // 9: gophkeeper.v1.SyncRequest
+	(*SyncResponse)(nil),          // 10: gophkeeper.v1.SyncResponse
+	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
 }
 var file_gophkeeper_v1_secrets_proto_depIdxs = []int32{
 	0,  // 0: gophkeeper.v1.Secret.type:type_name -> gophkeeper.v1.SecretType
-	9,  // 1: gophkeeper.v1.Secret.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 2: gophkeeper.v1.Secret.updated_at:type_name -> google.protobuf.Timestamp
+	11, // 1: gophkeeper.v1.Secret.created_at:type_name -> google.protobuf.Timestamp
+	11, // 2: gophkeeper.v1.Secret.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 3: gophkeeper.v1.CreateSecretRequest.type:type_name -> gophkeeper.v1.SecretType
 	1,  // 4: gophkeeper.v1.ListSecretsResponse.secrets:type_name -> gophkeeper.v1.Secret
-	2,  // 5: gophkeeper.v1.SecretsService.Create:input_type -> gophkeeper.v1.CreateSecretRequest
-	4,  // 6: gophkeeper.v1.SecretsService.List:input_type -> gophkeeper.v1.ListSecretsRequest
-	3,  // 7: gophkeeper.v1.SecretsService.Get:input_type -> gophkeeper.v1.GetSecretRequest
-	6,  // 8: gophkeeper.v1.SecretsService.Update:input_type -> gophkeeper.v1.UpdateSecretRequest
-	7,  // 9: gophkeeper.v1.SecretsService.Delete:input_type -> gophkeeper.v1.DeleteSecretRequest
-	1,  // 10: gophkeeper.v1.SecretsService.Create:output_type -> gophkeeper.v1.Secret
-	5,  // 11: gophkeeper.v1.SecretsService.List:output_type -> gophkeeper.v1.ListSecretsResponse
-	1,  // 12: gophkeeper.v1.SecretsService.Get:output_type -> gophkeeper.v1.Secret
-	1,  // 13: gophkeeper.v1.SecretsService.Update:output_type -> gophkeeper.v1.Secret
-	8,  // 14: gophkeeper.v1.SecretsService.Delete:output_type -> gophkeeper.v1.DeleteSecretResponse
-	10, // [10:15] is the sub-list for method output_type
-	5,  // [5:10] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	1,  // 5: gophkeeper.v1.SyncResponse.secrets:type_name -> gophkeeper.v1.Secret
+	2,  // 6: gophkeeper.v1.SecretsService.Create:input_type -> gophkeeper.v1.CreateSecretRequest
+	4,  // 7: gophkeeper.v1.SecretsService.List:input_type -> gophkeeper.v1.ListSecretsRequest
+	3,  // 8: gophkeeper.v1.SecretsService.Get:input_type -> gophkeeper.v1.GetSecretRequest
+	6,  // 9: gophkeeper.v1.SecretsService.Update:input_type -> gophkeeper.v1.UpdateSecretRequest
+	7,  // 10: gophkeeper.v1.SecretsService.Delete:input_type -> gophkeeper.v1.DeleteSecretRequest
+	9,  // 11: gophkeeper.v1.SecretsService.Sync:input_type -> gophkeeper.v1.SyncRequest
+	1,  // 12: gophkeeper.v1.SecretsService.Create:output_type -> gophkeeper.v1.Secret
+	5,  // 13: gophkeeper.v1.SecretsService.List:output_type -> gophkeeper.v1.ListSecretsResponse
+	1,  // 14: gophkeeper.v1.SecretsService.Get:output_type -> gophkeeper.v1.Secret
+	1,  // 15: gophkeeper.v1.SecretsService.Update:output_type -> gophkeeper.v1.Secret
+	8,  // 16: gophkeeper.v1.SecretsService.Delete:output_type -> gophkeeper.v1.DeleteSecretResponse
+	10, // 17: gophkeeper.v1.SecretsService.Sync:output_type -> gophkeeper.v1.SyncResponse
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_gophkeeper_v1_secrets_proto_init() }
@@ -653,7 +783,7 @@ func file_gophkeeper_v1_secrets_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gophkeeper_v1_secrets_proto_rawDesc), len(file_gophkeeper_v1_secrets_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

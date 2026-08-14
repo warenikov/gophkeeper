@@ -24,6 +24,8 @@ func toProtoSecret(s model.Secret) *pb.Secret {
 		Version:          s.Version,
 		CreatedAt:        timestamppb.New(s.CreatedAt),
 		UpdatedAt:        timestamppb.New(s.UpdatedAt),
+		Deleted:          s.Deleted,
+		Revision:         s.Revision,
 	}
 }
 

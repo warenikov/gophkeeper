@@ -10,6 +10,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/warenik/gophkeeper/internal/client/keeper"
 	"github.com/warenik/gophkeeper/internal/client/session"
@@ -78,6 +80,13 @@ func authenticatedClient(cmd *cobra.Command) (*keeper.Client, session.Session, e
 // commandContext возвращает контекст с таймаутом обращения к серверу.
 func commandContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), requestTimeout)
+}
+
+// isOffline сообщает, вызвана ли ошибка недоступностью сервера (нет сети) —
+// в этом случае команды переходят в офлайн-режим (read-only из кэша).
+func isOffline(err error) bool {
+	code := status.Code(err)
+	return code == codes.Unavailable || code == codes.DeadlineExceeded
 }
 
 // requireFlags помечает перечисленные флаги обязательными. Паникует при ошибке

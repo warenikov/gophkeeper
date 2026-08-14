@@ -18,6 +18,7 @@ type secretService interface {
 	Get(ctx context.Context, ownerID, id string) (model.Secret, error)
 	Update(ctx context.Context, ownerID string, secret model.Secret, expectedVersion int64) (model.Secret, error)
 	Delete(ctx context.Context, ownerID, id string) error
+	Sync(ctx context.Context, ownerID string, sinceRevision int64) ([]model.Secret, int64, error)
 }
 
 // SecretHandler реализует pb.SecretsServiceServer поверх сервисного слоя.
@@ -113,6 +114,28 @@ func (h *SecretHandler) Delete(ctx context.Context, req *pb.DeleteSecretRequest)
 		return nil, toGRPCError(err)
 	}
 	return &pb.DeleteSecretResponse{}, nil
+}
+
+// Sync возвращает изменения записей владельца с указанной ревизии.
+func (h *SecretHandler) Sync(ctx context.Context, req *pb.SyncRequest) (*pb.SyncResponse, error) {
+	ownerID, err := ownerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	secrets, cursor, err := h.svc.Sync(ctx, ownerID, req.GetSinceRevision())
+	if err != nil {
+		return nil, toGRPCError(err)
+	}
+
+	resp := &pb.SyncResponse{
+		Secrets:  make([]*pb.Secret, 0, len(secrets)),
+		Revision: cursor,
+	}
+	for _, s := range secrets {
+		resp.Secrets = append(resp.Secrets, toProtoSecret(s))
+	}
+	return resp, nil
 }
 
 // ownerFromContext извлекает идентификатор владельца, помещённый в контекст
