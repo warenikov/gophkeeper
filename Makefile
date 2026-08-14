@@ -67,6 +67,19 @@ cover:
 cover-html: cover
 	go tool cover -html=coverage.out
 
+## test-integration: run all tests incl. DB (requires GOPHKEEPER_TEST_DSN)
+.PHONY: test-integration
+test-integration:
+	go test -race ./...
+
+## cover-integration: coverage incl. DB layer (requires GOPHKEEPER_TEST_DSN)
+.PHONY: cover-integration
+cover-integration:
+	go test -race -covermode=atomic \
+		-coverpkg=$$(go list ./... | grep -vE '/internal/pb|/cmd/' | paste -sd, -) \
+		-coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out | tail -n 1
+
 ## lint: run golangci-lint
 .PHONY: lint
 lint:
