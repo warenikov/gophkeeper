@@ -285,13 +285,18 @@ func TestAllSecretTypes(t *testing.T) {
 // требует живого сервера) и закрытие соединения — с токеном и без.
 func TestDialAndClose(t *testing.T) {
 	for _, token := range []string{"tok", ""} {
-		c, err := Dial("localhost:12345", token)
+		c, err := Dial("localhost:12345", token, "")
 		if err != nil {
 			t.Fatalf("Dial(token=%q): %v", token, err)
 		}
 		if err := c.Close(); err != nil {
 			t.Errorf("Close(token=%q): %v", token, err)
 		}
+	}
+
+	// Несуществующий CA-файл → ошибка (ветка TLS).
+	if _, err := Dial("localhost:12345", "", "/nonexistent/ca.pem"); err == nil {
+		t.Error("ожидалась ошибка при отсутствующем CA-файле")
 	}
 }
 

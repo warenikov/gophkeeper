@@ -50,6 +50,20 @@ func TestLoadMissingRequired(t *testing.T) {
 	}
 }
 
+func TestTLSEnabled(t *testing.T) {
+	if (config.Config{}).TLSEnabled() {
+		t.Error("без сертификата TLS должен быть выключен")
+	}
+	full := config.Config{TLSCertFile: "cert.pem", TLSKeyFile: "key.pem"}
+	if !full.TLSEnabled() {
+		t.Error("с сертификатом и ключом TLS должен быть включён")
+	}
+	partial := config.Config{TLSCertFile: "cert.pem"}
+	if partial.TLSEnabled() {
+		t.Error("только с сертификатом (без ключа) TLS должен быть выключен")
+	}
+}
+
 func TestLoadInvalidTTL(t *testing.T) {
 	t.Setenv("GOPHKEEPER_DATABASE_DSN", "postgres://localhost/db")
 	t.Setenv("GOPHKEEPER_JWT_SECRET", "secret")

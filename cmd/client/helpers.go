@@ -41,26 +41,57 @@ func resolveAddress(cmd *cobra.Command, sessionAddr string) string {
 	return defaultAddress
 }
 
+// resolveCACert возвращает путь к корневому сертификату TLS из флага/окружения
+// (пустая строка означает незащищённое соединение).
+func resolveCACert(cmd *cobra.Command) string {
+	return flagOrEnv(cmd, "tls-ca", envTLSCA)
+}
+
 // readMasterPassword возвращает мастер-пароль из флага/переменной окружения, а
-// при их отсутствии запрашивает его интерактивно без эха.
+// при их отсутствии запрашивает его интерактивно без эха. Значение всегда
+// триммится (и для флага/env, и для интерактива), иначе один и тот же пароль
+// дал бы разные ключи шифрования.
 func readMasterPassword(cmd *cobra.Command) (string, error) {
 	if mp := flagOrEnv(cmd, "master-password", envMasterPassword); mp != "" {
-		return mp, nil
+		return strings.TrimSpace(mp), nil
 	}
 
-	fmt.Fprint(cmd.ErrOrStderr(), "Мастер-пароль: ")
-	data, err := term.ReadPassword(int(os.Stdin.Fd())) //nolint:gosec // файловый дескриптор всегда помещается в int
-
-	fmt.Fprintln(cmd.ErrOrStderr())
+	mp, err := promptSecret(cmd, "Мастер-пароль: ")
 	if err != nil {
-		return "", fmt.Errorf("чтение мастер-пароля: %w", err)
+		return "", err
 	}
-
-	mp := strings.TrimSpace(string(data))
 	if mp == "" {
 		return "", errors.New("мастер-пароль не может быть пустым")
 	}
 	return mp, nil
+}
+
+// promptSecret читает секрет из терминала без эха (пароли и т. п.).
+func promptSecret(cmd *cobra.Command, label string) (string, error) {
+	fmt.Fprint(cmd.ErrOrStderr(), label)
+	data, err := term.ReadPassword(int(os.Stdin.Fd())) //nolint:gosec // файловый дескриптор всегда помещается в int
+	fmt.Fprintln(cmd.ErrOrStderr())
+	if err != nil {
+		return "", fmt.Errorf("чтение ввода: %w", err)
+	}
+	return strings.TrimSpace(string(data)), nil
+}
+
+// secretFlagOrPrompt возвращает значение флага, а при его отсутствии запрашивает
+// секрет интерактивно без эха — чтобы не передавать его в аргументах командной
+// строки (утечка в history/ps).
+func secretFlagOrPrompt(cmd *cobra.Command, flagName, label string) (string, error) {
+	if v, err := cmd.Flags().GetString(flagName); err == nil && v != "" {
+		return v, nil
+	}
+	value, err := promptSecret(cmd, label)
+	if err != nil {
+		return "", err
+	}
+	if value == "" {
+		return "", fmt.Errorf("%s не может быть пустым", flagName)
+	}
+	return value, nil
 }
 
 // authenticatedClient загружает сессию и создаёт клиент с токеном доступа.
@@ -70,7 +101,7 @@ func authenticatedClient(cmd *cobra.Command) (*keeper.Client, session.Session, e
 		return nil, session.Session{}, err
 	}
 
-	client, err := keeper.Dial(resolveAddress(cmd, sess.ServerAddress), sess.Token)
+	client, err := keeper.Dial(resolveAddress(cmd, sess.ServerAddress), sess.Token, resolveCACert(cmd))
 	if err != nil {
 		return nil, session.Session{}, err
 	}

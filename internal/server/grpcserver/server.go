@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"runtime/debug"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 
 	"github.com/warenik/gophkeeper/internal/pb"
@@ -29,13 +32,20 @@ func New(
 	authHandler *AuthHandler,
 	secretHandler *SecretHandler,
 	log *slog.Logger,
+	creds credentials.TransportCredentials,
 ) *Server {
-	srv := grpc.NewServer(
+	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
+			recoveryInterceptor(log), // внешний: ловит панику любого следующего слоя
 			loggingInterceptor(log),
 			tm.NewUnaryInterceptor(),
 		),
-	)
+	}
+	if creds != nil {
+		opts = append(opts, grpc.Creds(creds))
+	}
+
+	srv := grpc.NewServer(opts...)
 
 	pb.RegisterAuthServiceServer(srv, authHandler)
 	pb.RegisterSecretsServiceServer(srv, secretHandler)
@@ -65,7 +75,9 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 // loggingInterceptor логирует каждый unary-вызов: метод, код ответа и
-// длительность.
+// длительность. Внутренние ошибки (Internal/Unknown) логируются на уровне Error
+// вместе с текстом ошибки, чтобы причина сбоя была видна (клиенту при этом
+// возвращается только код).
 func loggingInterceptor(log *slog.Logger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
@@ -75,11 +87,41 @@ func loggingInterceptor(log *slog.Logger) grpc.UnaryServerInterceptor {
 	) (any, error) {
 		start := time.Now()
 		resp, err := handler(ctx, req)
-		log.Info("gRPC-вызов",
+
+		code := status.Code(err)
+		attrs := []any{
 			"method", info.FullMethod,
-			"code", status.Code(err).String(),
+			"code", code.String(),
 			"duration", time.Since(start).String(),
-		)
+		}
+		if code == codes.Internal || code == codes.Unknown {
+			log.Error("gRPC-вызов: внутренняя ошибка", append(attrs, "err", err)...)
+		} else {
+			log.Info("gRPC-вызов", attrs...)
+		}
 		return resp, err
+	}
+}
+
+// recoveryInterceptor перехватывает панику в обработчике, логирует её со стеком
+// и возвращает клиенту codes.Internal, не давая процессу сервера упасть.
+func recoveryInterceptor(log *slog.Logger) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req any,
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (resp any, err error) {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error("паника в обработчике gRPC",
+					"method", info.FullMethod,
+					"panic", r,
+					"stack", string(debug.Stack()),
+				)
+				err = status.Error(codes.Internal, "internal error")
+			}
+		}()
+		return handler(ctx, req)
 	}
 }

@@ -13,6 +13,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"google.golang.org/grpc/credentials"
+
 	"github.com/warenik/gophkeeper/internal/buildmeta"
 	"github.com/warenik/gophkeeper/internal/server/auth"
 	"github.com/warenik/gophkeeper/internal/server/config"
@@ -69,6 +71,17 @@ func run(logger *slog.Logger) error {
 	authHandler := grpcserver.NewAuthHandler(authSvc)
 	secretHandler := grpcserver.NewSecretHandler(secretSvc)
 
-	srv := grpcserver.New(cfg.GRPCAddress, tokens, authHandler, secretHandler, logger)
+	var creds credentials.TransportCredentials
+	if cfg.TLSEnabled() {
+		creds, err = credentials.NewServerTLSFromFile(cfg.TLSCertFile, cfg.TLSKeyFile)
+		if err != nil {
+			return err
+		}
+		logger.Info("TLS включён")
+	} else {
+		logger.Warn("TLS выключен — используется незащищённое соединение (только для локальной разработки)")
+	}
+
+	srv := grpcserver.New(cfg.GRPCAddress, tokens, authHandler, secretHandler, logger, creds)
 	return srv.Run(ctx)
 }

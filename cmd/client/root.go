@@ -13,6 +13,7 @@ const defaultAddress = "localhost:8081"
 const (
 	envAddress        = "GOPHKEEPER_ADDRESS"
 	envMasterPassword = "GOPHKEEPER_MASTER_PASSWORD" //nolint:gosec // это имя переменной окружения, а не сам секрет
+	envTLSCA          = "GOPHKEEPER_TLS_CA"
 )
 
 // newRootCmd собирает корневую команду и всё дерево подкоманд.
@@ -31,6 +32,7 @@ func newRootCmd() *cobra.Command {
 	// означает «взять из окружения или сессии».
 	root.PersistentFlags().String("address", "", "адрес сервера (или env "+envAddress+", по умолчанию "+defaultAddress+")")
 	root.PersistentFlags().String("master-password", "", "мастер-пароль для шифрования (или env "+envMasterPassword+")")
+	root.PersistentFlags().String("tls-ca", "", "путь к корневому сертификату TLS (или env "+envTLSCA+"); без него — незащищённо")
 
 	root.AddCommand(
 		newVersionCmd(),

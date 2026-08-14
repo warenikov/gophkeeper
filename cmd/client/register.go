@@ -11,14 +11,19 @@ import (
 
 // newRegisterCmd возвращает команду регистрации нового пользователя.
 func newRegisterCmd() *cobra.Command {
-	var login, password string
+	var login string
 
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "Зарегистрировать нового пользователя и войти",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			password, err := secretFlagOrPrompt(cmd, "password", "Пароль: ")
+			if err != nil {
+				return err
+			}
+
 			address := resolveAddress(cmd, "")
-			client, err := keeper.Dial(address, "")
+			client, err := keeper.Dial(address, "", resolveCACert(cmd))
 			if err != nil {
 				return err
 			}
@@ -42,8 +47,8 @@ func newRegisterCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&login, "login", "", "логин пользователя")
-	cmd.Flags().StringVar(&password, "password", "", "пароль пользователя")
-	requireFlags(cmd, "login", "password")
+	cmd.Flags().String("password", "", "пароль (при отсутствии запрашивается без эха)")
+	requireFlags(cmd, "login")
 
 	return cmd
 }

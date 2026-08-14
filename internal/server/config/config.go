@@ -21,6 +21,16 @@ type Config struct {
 	JWTSecret string //nolint:gosec // конфиг намеренно содержит секрет подписи JWT
 	// TokenTTL — время жизни токена доступа.
 	TokenTTL time.Duration
+	// TLSCertFile и TLSKeyFile — пути к сертификату и ключу TLS. Если оба
+	// заданы, сервер работает поверх TLS; иначе — незащищённо (локальная
+	// разработка).
+	TLSCertFile string
+	TLSKeyFile  string
+}
+
+// TLSEnabled сообщает, настроен ли TLS (заданы и сертификат, и ключ).
+func (c Config) TLSEnabled() bool {
+	return c.TLSCertFile != "" && c.TLSKeyFile != ""
 }
 
 // Load читает конфигурацию из переменных окружения и валидирует обязательные
@@ -31,6 +41,8 @@ func Load() (Config, error) {
 		DatabaseDSN: env("DATABASE_DSN", ""),
 		JWTSecret:   env("JWT_SECRET", ""),
 		TokenTTL:    24 * time.Hour,
+		TLSCertFile: env("TLS_CERT_FILE", ""),
+		TLSKeyFile:  env("TLS_KEY_FILE", ""),
 	}
 
 	if raw := env("TOKEN_TTL", ""); raw != "" {

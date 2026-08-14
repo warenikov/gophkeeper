@@ -58,12 +58,16 @@ const maxBinarySize = 3 << 20 // 3 MiB
 
 // newAddCardCmd — добавление записи типа «банковская карта».
 func newAddCardCmd() *cobra.Command {
-	var name, number, holder, expiry, cvv, meta string
+	var name, number, holder, expiry, meta string
 
 	cmd := &cobra.Command{
 		Use:   "card",
 		Short: "Добавить банковскую карту",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			cvv, err := secretFlagOrPrompt(cmd, "cvv", "CVV: ")
+			if err != nil {
+				return err
+			}
 			plaintext, err := payload.EncodeCard(payload.Card{
 				Number: number, Holder: holder, Expiry: expiry, CVV: cvv,
 			})
@@ -78,9 +82,9 @@ func newAddCardCmd() *cobra.Command {
 	cmd.Flags().StringVar(&number, "number", "", "номер карты")
 	cmd.Flags().StringVar(&holder, "holder", "", "держатель карты")
 	cmd.Flags().StringVar(&expiry, "expiry", "", "срок действия (MM/YY)")
-	cmd.Flags().StringVar(&cvv, "cvv", "", "CVV")
+	cmd.Flags().String("cvv", "", "CVV (при отсутствии запрашивается без эха)")
 	cmd.Flags().StringVar(&meta, "meta", "", "произвольная метаинформация (не шифруется)")
-	requireFlags(cmd, "name", "number", "holder", "expiry", "cvv")
+	requireFlags(cmd, "name", "number", "holder", "expiry")
 
 	return cmd
 }
@@ -114,12 +118,16 @@ func newAddBinaryCmd() *cobra.Command {
 
 // newAddLoginPasswordCmd — добавление записи типа «логин/пароль».
 func newAddLoginPasswordCmd() *cobra.Command {
-	var name, login, password, meta string
+	var name, login, meta string
 
 	cmd := &cobra.Command{
 		Use:   "login-password",
 		Short: "Добавить пару логин/пароль",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			password, err := secretFlagOrPrompt(cmd, "password", "Пароль: ")
+			if err != nil {
+				return err
+			}
 			plaintext, err := payload.EncodeLoginPassword(payload.LoginPassword{Login: login, Password: password})
 			if err != nil {
 				return err
@@ -130,9 +138,9 @@ func newAddLoginPasswordCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&name, "name", "", "название записи")
 	cmd.Flags().StringVar(&login, "login", "", "логин")
-	cmd.Flags().StringVar(&password, "password", "", "пароль")
+	cmd.Flags().String("password", "", "пароль (при отсутствии запрашивается без эха)")
 	cmd.Flags().StringVar(&meta, "meta", "", "произвольная метаинформация (не шифруется)")
-	requireFlags(cmd, "name", "login", "password")
+	requireFlags(cmd, "name", "login")
 
 	return cmd
 }

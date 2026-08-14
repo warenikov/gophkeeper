@@ -11,14 +11,19 @@ import (
 
 // newLoginCmd возвращает команду аутентификации существующего пользователя.
 func newLoginCmd() *cobra.Command {
-	var login, password string
+	var login string
 
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Войти под существующим пользователем",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			password, err := secretFlagOrPrompt(cmd, "password", "Пароль: ")
+			if err != nil {
+				return err
+			}
+
 			address := resolveAddress(cmd, "")
-			client, err := keeper.Dial(address, "")
+			client, err := keeper.Dial(address, "", resolveCACert(cmd))
 			if err != nil {
 				return err
 			}
@@ -42,8 +47,8 @@ func newLoginCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&login, "login", "", "логин пользователя")
-	cmd.Flags().StringVar(&password, "password", "", "пароль пользователя")
-	requireFlags(cmd, "login", "password")
+	cmd.Flags().String("password", "", "пароль (при отсутствии запрашивается без эха)")
+	requireFlags(cmd, "login")
 
 	return cmd
 }

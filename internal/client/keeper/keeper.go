@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
@@ -23,11 +24,21 @@ type Client struct {
 // Dial создаёт клиент к серверу по адресу address. Если token не пуст, он
 // прикладывается к каждому исходящему вызову в заголовке authorization.
 //
-// В Спринте 1 используется незащищённый транспорт (локальная разработка); TLS
-// добавляется на этапе развёртывания.
-func Dial(address, token string) (*Client, error) {
+// Если caFile не пуст, соединение устанавливается поверх TLS с доверием к
+// указанному корневому сертификату; иначе используется незащищённый транспорт
+// (локальная разработка).
+func Dial(address, token, caFile string) (*Client, error) {
+	transportCreds := insecure.NewCredentials()
+	if caFile != "" {
+		tlsCreds, err := credentials.NewClientTLSFromFile(caFile, "")
+		if err != nil {
+			return nil, fmt.Errorf("keeper: load CA %s: %w", caFile, err)
+		}
+		transportCreds = tlsCreds
+	}
+
 	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(transportCreds),
 	}
 	if token != "" {
 		opts = append(opts, grpc.WithUnaryInterceptor(tokenInterceptor(token)))
