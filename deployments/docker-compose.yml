@@ -38,7 +38,7 @@ services:
     environment:
       GOPHKEEPER_GRPC_ADDRESS: ":8081"
       GOPHKEEPER_DATABASE_DSN: "postgres://${POSTGRES_USER:-gophkeeper}:${POSTGRES_PASSWORD:-gophkeeper}@postgres:5432/${POSTGRES_DB:-gophkeeper}?sslmode=disable"
-      GOPHKEEPER_JWT_SECRET: "${GOPHKEEPER_JWT_SECRET:-change-me-in-production}"
+      GOPHKEEPER_JWT_SECRET: "${GOPHKEEPER_JWT_SECRET:-change-me-please-min-32-bytes-secret}"
     ports:
       - "${GOPHKEEPER_GRPC_PORT:-8081}:8081"
 

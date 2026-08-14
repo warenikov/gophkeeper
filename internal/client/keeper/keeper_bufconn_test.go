@@ -322,8 +322,13 @@ func TestSync(t *testing.T) {
 	}
 
 	// Создаём две записи.
-	s1, _ := c.Create(ctx, pb.SecretType_SECRET_TYPE_TEXT, "a", "", []byte("x"))
-	c.Create(ctx, pb.SecretType_SECRET_TYPE_TEXT, "b", "", []byte("y"))
+	s1, err := c.Create(ctx, pb.SecretType_SECRET_TYPE_TEXT, "a", "", []byte("x"))
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+	if _, err := c.Create(ctx, pb.SecretType_SECRET_TYPE_TEXT, "b", "", []byte("y")); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
 
 	changes, rev1, err := c.Sync(ctx, rev0)
 	if err != nil {

@@ -11,6 +11,9 @@ import (
 // Префикс переменных окружения сервера.
 const envPrefix = "GOPHKEEPER_"
 
+// minJWTSecretLen — минимальная длина секрета подписи JWT (для стойкости HMAC).
+const minJWTSecretLen = 32
+
 // Config — конфигурация сервера.
 type Config struct {
 	// GRPCAddress — адрес, на котором слушает gRPC-сервер (например, ":8081").
@@ -58,6 +61,9 @@ func Load() (Config, error) {
 	}
 	if cfg.JWTSecret == "" {
 		return Config{}, errors.New("config: " + envPrefix + "JWT_SECRET is required")
+	}
+	if len(cfg.JWTSecret) < minJWTSecretLen {
+		return Config{}, errors.New("config: " + envPrefix + "JWT_SECRET must be at least 32 bytes")
 	}
 
 	return cfg, nil

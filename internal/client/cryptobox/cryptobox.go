@@ -30,18 +30,19 @@ const (
 const keySize = 32
 
 // ErrKeySize — ключ имеет неверную длину для AES-256.
-var ErrKeySize = errors.New("crypto: key must be 32 bytes")
+var ErrKeySize = errors.New("cryptobox: key must be 32 bytes")
 
 // ErrCiphertext — шифртекст повреждён или слишком короткий.
-var ErrCiphertext = errors.New("crypto: invalid ciphertext")
+var ErrCiphertext = errors.New("cryptobox: invalid ciphertext")
 
 // DeriveKey выводит 32-байтовый ключ шифрования из мастер-пароля и логина.
 //
 // Соль вычисляется детерминированно из логина, чтобы один и тот же ключ
 // восстанавливался на любом устройстве пользователя (нужно для синхронизации
 // без хранения соли на сервере). Энтропию обеспечивает мастер-пароль; логин
-// лишь разделяет пространство ключей между пользователями. В Спринте 2 соль
-// можно заменить на случайную, хранимую на сервере.
+// лишь разделяет пространство ключей между пользователями. Это осознанный
+// tradeoff: возможное усиление — случайная соль на пользователя, хранимая на
+// сервере и синхронизируемая между устройствами.
 func DeriveKey(masterPassword, login string) []byte {
 	salt := sha256.Sum256([]byte("gophkeeper:v1:" + login))
 	return argon2.IDKey([]byte(masterPassword), salt[:], argonTime, argonMemory, argonThreads, keyLen)
@@ -58,7 +59,7 @@ func Encrypt(key, plaintext []byte) ([]byte, error) {
 
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		return nil, fmt.Errorf("crypto: read nonce: %w", err)
+		return nil, fmt.Errorf("cryptobox: read nonce: %w", err)
 	}
 
 	return gcm.Seal(nonce, nonce, plaintext, nil), nil
@@ -93,12 +94,12 @@ func newGCM(key []byte) (cipher.AEAD, error) {
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, fmt.Errorf("crypto: new cipher: %w", err)
+		return nil, fmt.Errorf("cryptobox: new cipher: %w", err)
 	}
 
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return nil, fmt.Errorf("crypto: new gcm: %w", err)
+		return nil, fmt.Errorf("cryptobox: new gcm: %w", err)
 	}
 	return gcm, nil
 }

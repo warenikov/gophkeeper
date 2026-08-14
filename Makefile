@@ -59,7 +59,8 @@ COVER_EXCLUDE := /internal/pb|/cmd/|/internal/server/storage/postgres
 cover:
 	go test -race -covermode=atomic \
 		-coverpkg=$$(go list ./... | grep -vE '$(COVER_EXCLUDE)' | paste -sd, -) \
-		-coverprofile=coverage.out ./...
+		-coverprofile=coverage.out \
+		$$(go list ./... | grep -vE '$(COVER_EXCLUDE)')
 	go tool cover -func=coverage.out | tail -n 1
 
 ## cover-html: open the HTML coverage report
@@ -77,7 +78,8 @@ test-integration:
 cover-integration:
 	go test -race -covermode=atomic \
 		-coverpkg=$$(go list ./... | grep -vE '/internal/pb|/cmd/' | paste -sd, -) \
-		-coverprofile=coverage.out ./...
+		-coverprofile=coverage.out \
+		$$(go list ./... | grep -vE '/internal/pb|/cmd/')
 	go tool cover -func=coverage.out | tail -n 1
 
 ## lint: run golangci-lint

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"time"
 )
 
@@ -103,11 +104,8 @@ func (c Cache) Sorted() []Secret {
 	for _, s := range c.Secrets {
 		out = append(out, s)
 	}
-	// Простая сортировка по UpdatedAt (пузырьком не нужно — используем slices).
-	for i := 1; i < len(out); i++ {
-		for j := i; j > 0 && out[j-1].UpdatedAt.After(out[j].UpdatedAt); j-- {
-			out[j-1], out[j] = out[j], out[j-1]
-		}
-	}
+	slices.SortFunc(out, func(a, b Secret) int {
+		return a.UpdatedAt.Compare(b.UpdatedAt)
+	})
 	return out
 }

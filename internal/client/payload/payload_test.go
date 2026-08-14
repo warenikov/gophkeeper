@@ -52,6 +52,29 @@ func TestDecodeCardInvalid(t *testing.T) {
 	}
 }
 
+func TestOTPRoundtrip(t *testing.T) {
+	want := payload.OTP{Secret: "JBSWY3DPEHPK3PXP", Issuer: "GitHub", Account: "alice"}
+
+	data, err := payload.EncodeOTP(want)
+	if err != nil {
+		t.Fatalf("EncodeOTP: %v", err)
+	}
+
+	got, err := payload.DecodeOTP(data)
+	if err != nil {
+		t.Fatalf("DecodeOTP: %v", err)
+	}
+	if got != want {
+		t.Errorf("после roundtrip = %+v, ожидалось %+v", got, want)
+	}
+}
+
+func TestDecodeOTPInvalid(t *testing.T) {
+	if _, err := payload.DecodeOTP([]byte("{oops")); err == nil {
+		t.Error("ожидалась ошибка на некорректном JSON")
+	}
+}
+
 func TestTextRoundtrip(t *testing.T) {
 	const want = "произвольный текст"
 	if got := payload.DecodeText(payload.EncodeText(want)); got != want {

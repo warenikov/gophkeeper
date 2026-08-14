@@ -9,7 +9,7 @@ import (
 
 func TestLoadSuccessWithDefaults(t *testing.T) {
 	t.Setenv("GOPHKEEPER_DATABASE_DSN", "postgres://localhost/db")
-	t.Setenv("GOPHKEEPER_JWT_SECRET", "secret")
+	t.Setenv("GOPHKEEPER_JWT_SECRET", "0123456789abcdef0123456789abcdef")
 
 	cfg, err := config.Load()
 	if err != nil {
@@ -25,7 +25,7 @@ func TestLoadSuccessWithDefaults(t *testing.T) {
 
 func TestLoadCustomValues(t *testing.T) {
 	t.Setenv("GOPHKEEPER_DATABASE_DSN", "postgres://localhost/db")
-	t.Setenv("GOPHKEEPER_JWT_SECRET", "secret")
+	t.Setenv("GOPHKEEPER_JWT_SECRET", "0123456789abcdef0123456789abcdef")
 	t.Setenv("GOPHKEEPER_GRPC_ADDRESS", ":9000")
 	t.Setenv("GOPHKEEPER_TOKEN_TTL", "1h")
 
@@ -43,7 +43,7 @@ func TestLoadCustomValues(t *testing.T) {
 
 func TestLoadMissingRequired(t *testing.T) {
 	t.Setenv("GOPHKEEPER_DATABASE_DSN", "")
-	t.Setenv("GOPHKEEPER_JWT_SECRET", "secret")
+	t.Setenv("GOPHKEEPER_JWT_SECRET", "0123456789abcdef0123456789abcdef")
 
 	if _, err := config.Load(); err == nil {
 		t.Error("ожидалась ошибка при отсутствии DATABASE_DSN")
@@ -64,9 +64,18 @@ func TestTLSEnabled(t *testing.T) {
 	}
 }
 
+func TestLoadShortJWTSecret(t *testing.T) {
+	t.Setenv("GOPHKEEPER_DATABASE_DSN", "postgres://localhost/db")
+	t.Setenv("GOPHKEEPER_JWT_SECRET", "too-short")
+
+	if _, err := config.Load(); err == nil {
+		t.Error("ожидалась ошибка при слишком коротком JWT_SECRET")
+	}
+}
+
 func TestLoadInvalidTTL(t *testing.T) {
 	t.Setenv("GOPHKEEPER_DATABASE_DSN", "postgres://localhost/db")
-	t.Setenv("GOPHKEEPER_JWT_SECRET", "secret")
+	t.Setenv("GOPHKEEPER_JWT_SECRET", "0123456789abcdef0123456789abcdef")
 	t.Setenv("GOPHKEEPER_TOKEN_TTL", "не-длительность")
 
 	if _, err := config.Load(); err == nil {
