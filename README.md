@@ -77,6 +77,9 @@ export GOPHKEEPER_MASTER_PASSWORD='мой-мастер-пароль'
 # синхронизировать локальный кэш (нужно для офлайн-чтения)
 ./bin/gophkeeper-client sync
 
+# интерактивный терминальный интерфейс (список, просмотр, удаление)
+./bin/gophkeeper-client tui
+
 # синхронизация с другого устройства: тот же логин/пароль/мастер-пароль
 ./bin/gophkeeper-client login --login alice --password 'pass123'
 ./bin/gophkeeper-client list

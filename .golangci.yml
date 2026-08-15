@@ -81,6 +81,12 @@ linters:
           - gosec
           - errcheck
           - unparam
+      # BubbleTea требует value-receiver у модели (Update возвращает tea.Model
+      # по значению) — hugeParam здесь неизбежен и идиоматичен.
+      - path: internal/client/tui/
+        linters:
+          - gocritic
+        text: hugeParam
     paths:
       - third_party$
       - builtin$
