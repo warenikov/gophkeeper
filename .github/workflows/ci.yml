@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
       - name: golangci-lint
@@ -52,7 +52,7 @@ jobs:
       GOPHKEEPER_TEST_DSN: postgres://gophkeeper:gophkeeper@localhost:5432/gophkeeper?sslmode=disable
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go }}
       - name: Тесты (race, shuffle, покрытие)
