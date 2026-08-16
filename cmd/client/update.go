@@ -117,6 +117,13 @@ func newUpdateBinaryCmd() *cobra.Command {
 // updateEncrypted шифрует новую нагрузку и обновляет запись, автоматически
 // подставляя текущую версию (оптимистичная блокировка).
 func updateEncrypted(cmd *cobra.Command, id, name, meta string, plaintext []byte) error {
+	if err := ensureUTF8("название", name); err != nil {
+		return err
+	}
+	if err := ensureUTF8("метаинформация", meta); err != nil {
+		return err
+	}
+
 	client, sess, err := authenticatedClient(cmd)
 	if err != nil {
 		return err

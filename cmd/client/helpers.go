@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -111,6 +112,17 @@ func authenticatedClient(cmd *cobra.Command) (*keeper.Client, session.Session, e
 // commandContext возвращает контекст с таймаутом обращения к серверу.
 func commandContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), requestTimeout)
+}
+
+// ensureUTF8 проверяет, что значение — корректный UTF-8. Поля, уходящие на
+// сервер как proto3-строки, обязаны быть в UTF-8; иначе gRPC падает с
+// невнятной ошибкой маршалинга. Проверяем заранее и даём понятное сообщение.
+func ensureUTF8(field, value string) error {
+	if !utf8.ValidString(value) {
+		return fmt.Errorf("поле %q содержит недопустимые символы: нужен корректный UTF-8 "+
+			"(возможно, символ введён нестандартной раскладкой или вставлен из другого источника)", field)
+	}
+	return nil
 }
 
 // isOffline сообщает, вызвана ли ошибка недоступностью сервера (нет сети) —

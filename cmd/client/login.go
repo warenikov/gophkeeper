@@ -21,6 +21,12 @@ func newLoginCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			if err := ensureUTF8("логин", login); err != nil {
+				return err
+			}
+			if err := ensureUTF8("пароль", password); err != nil {
+				return err
+			}
 
 			address := resolveAddress(cmd, "")
 			client, err := keeper.Dial(address, "", resolveCACert(cmd))

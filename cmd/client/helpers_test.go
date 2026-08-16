@@ -82,6 +82,16 @@ func TestApplyChanges(t *testing.T) {
 	}
 }
 
+func TestEnsureUTF8(t *testing.T) {
+	if err := ensureUTF8("пароль", "Обычный Pass123!"); err != nil {
+		t.Errorf("валидный UTF-8 отклонён: %v", err)
+	}
+	// Невалидный UTF-8 (одиночный байт 0xff).
+	if err := ensureUTF8("пароль", "bad\xff"); err == nil {
+		t.Error("ожидалась ошибка на невалидном UTF-8")
+	}
+}
+
 func TestVersionCommand(t *testing.T) {
 	cmd := newRootCmd()
 	buf := &bytes.Buffer{}

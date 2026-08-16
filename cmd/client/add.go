@@ -168,6 +168,13 @@ func newAddTextCmd() *cobra.Command {
 // createEncrypted шифрует нагрузку мастер-ключом пользователя и создаёт запись
 // на сервере.
 func createEncrypted(cmd *cobra.Command, typ pb.SecretType, name, meta string, plaintext []byte) error {
+	if err := ensureUTF8("название", name); err != nil {
+		return err
+	}
+	if err := ensureUTF8("метаинформация", meta); err != nil {
+		return err
+	}
+
 	client, sess, err := authenticatedClient(cmd)
 	if err != nil {
 		return err
