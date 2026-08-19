@@ -8,6 +8,7 @@ import (
 
 	"github.com/warenikov/gophkeeper/internal/client/cache"
 	"github.com/warenikov/gophkeeper/internal/pb"
+	"github.com/warenikov/gophkeeper/internal/slicesx"
 )
 
 // newListCmd возвращает команду вывода списка записей пользователя. При
@@ -44,11 +45,7 @@ func listFromCache(cmd *cobra.Command, login string) error {
 	if err != nil {
 		return err
 	}
-	secrets := make([]*pb.Secret, 0, len(local.Secrets))
-	for _, s := range local.Sorted() {
-		secrets = append(secrets, cacheToProto(s))
-	}
-	return renderList(cmd, secrets, true)
+	return renderList(cmd, slicesx.Map(local.Sorted(), cacheToProto), true)
 }
 
 // renderList печатает таблицу записей. offline включает пометку режима.
