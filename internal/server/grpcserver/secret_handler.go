@@ -9,6 +9,7 @@ import (
 	"github.com/warenikov/gophkeeper/internal/pb"
 	"github.com/warenikov/gophkeeper/internal/server/auth"
 	"github.com/warenikov/gophkeeper/internal/server/model"
+	"github.com/warenikov/gophkeeper/internal/slicesx"
 )
 
 // secretService — бизнес-операции над записями, нужные обработчику.
@@ -63,11 +64,7 @@ func (h *SecretHandler) List(ctx context.Context, _ *pb.ListSecretsRequest) (*pb
 		return nil, toGRPCError(err)
 	}
 
-	resp := &pb.ListSecretsResponse{Secrets: make([]*pb.Secret, 0, len(secrets))}
-	for _, s := range secrets {
-		resp.Secrets = append(resp.Secrets, toProtoSecret(s))
-	}
-	return resp, nil
+	return &pb.ListSecretsResponse{Secrets: slicesx.Map(secrets, toProtoSecret)}, nil
 }
 
 // Get возвращает запись по идентификатору.
@@ -128,14 +125,10 @@ func (h *SecretHandler) Sync(ctx context.Context, req *pb.SyncRequest) (*pb.Sync
 		return nil, toGRPCError(err)
 	}
 
-	resp := &pb.SyncResponse{
-		Secrets:  make([]*pb.Secret, 0, len(secrets)),
+	return &pb.SyncResponse{
+		Secrets:  slicesx.Map(secrets, toProtoSecret),
 		Revision: cursor,
-	}
-	for _, s := range secrets {
-		resp.Secrets = append(resp.Secrets, toProtoSecret(s))
-	}
-	return resp, nil
+	}, nil
 }
 
 // ownerFromContext извлекает идентификатор владельца, помещённый в контекст
