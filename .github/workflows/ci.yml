@@ -16,9 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # Go и golangci-lint зафиксированы совместимой парой: линтер v2.10.1
+      # собран на go1.26, поэтому и тулчейн берём 1.26 — иначе укатившийся
+      # вперёд "stable" (go1.27) ломает type-checking линтера. Тесты гоняются
+      # отдельной матрицей (1.25/1.26/stable) для проверки совместимости.
       - uses: actions/setup-go@v7
         with:
-          go-version: stable
+          go-version: "1.26"
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
