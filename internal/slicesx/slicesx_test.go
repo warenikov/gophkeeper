@@ -1,6 +1,7 @@
 package slicesx_test
 
 import (
+	"slices"
 	"strconv"
 	"testing"
 
@@ -8,20 +9,34 @@ import (
 )
 
 func TestMap(t *testing.T) {
-	got := slicesx.Map([]int{1, 2, 3}, strconv.Itoa)
+	got := slices.Collect(slicesx.Map(slices.Values([]int{1, 2, 3}), strconv.Itoa))
 	want := []string{"1", "2", "3"}
-	if len(got) != len(want) {
-		t.Fatalf("длина = %d, ожидалось %d", len(got), len(want))
-	}
-	for i := range want {
-		if got[i] != want[i] {
-			t.Errorf("[%d] = %q, ожидалось %q", i, got[i], want[i])
-		}
+	if !slices.Equal(got, want) {
+		t.Errorf("got %v, ожидалось %v", got, want)
 	}
 }
 
 func TestMapEmpty(t *testing.T) {
-	if got := slicesx.Map([]int{}, strconv.Itoa); len(got) != 0 {
-		t.Errorf("для пустого среза ожидался пустой результат, получено %v", got)
+	if got := slices.Collect(slicesx.Map(slices.Values([]int{}), strconv.Itoa)); len(got) != 0 {
+		t.Errorf("для пустой последовательности ожидался пустой результат, получено %v", got)
+	}
+}
+
+// TestMapLazy проверяет ленивость: при досрочной остановке потребления f
+// вычисляется только для потреблённых элементов, промежуточный срез не строится.
+func TestMapLazy(t *testing.T) {
+	calls := 0
+	seq := slicesx.Map(slices.Values([]int{1, 2, 3, 4, 5}), func(n int) int {
+		calls++
+		return n * 10
+	})
+
+	for v := range seq {
+		if v == 20 { // останавливаемся после второго элемента
+			break
+		}
+	}
+	if calls != 2 {
+		t.Errorf("f вызвана %d раз, ожидалось 2 (ленивое вычисление)", calls)
 	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -45,7 +46,7 @@ func listFromCache(cmd *cobra.Command, login string) error {
 	if err != nil {
 		return err
 	}
-	return renderList(cmd, slicesx.Map(local.Sorted(), cacheToProto), true)
+	return renderList(cmd, slices.Collect(slicesx.Map(slices.Values(local.Sorted()), cacheToProto)), true)
 }
 
 // renderList печатает таблицу записей. offline включает пометку режима.

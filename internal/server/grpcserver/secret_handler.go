@@ -2,6 +2,7 @@ package grpcserver
 
 import (
 	"context"
+	"slices"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -64,7 +65,9 @@ func (h *SecretHandler) List(ctx context.Context, _ *pb.ListSecretsRequest) (*pb
 		return nil, toGRPCError(err)
 	}
 
-	return &pb.ListSecretsResponse{Secrets: slicesx.Map(secrets, toProtoSecret)}, nil
+	return &pb.ListSecretsResponse{
+		Secrets: slices.Collect(slicesx.Map(slices.Values(secrets), toProtoSecret)),
+	}, nil
 }
 
 // Get возвращает запись по идентификатору.
@@ -126,7 +129,7 @@ func (h *SecretHandler) Sync(ctx context.Context, req *pb.SyncRequest) (*pb.Sync
 	}
 
 	return &pb.SyncResponse{
-		Secrets:  slicesx.Map(secrets, toProtoSecret),
+		Secrets:  slices.Collect(slicesx.Map(slices.Values(secrets), toProtoSecret)),
 		Revision: cursor,
 	}, nil
 }
