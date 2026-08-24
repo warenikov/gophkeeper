@@ -22,7 +22,9 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.10.1
+          # latest — чтобы линтер собирался под текущий Go-тулчейн (иначе при
+          # укатке "stable" Go вперёд бинарник линтера падает на type-checking).
+          version: latest
       - name: go vet
         run: go vet ./...
       - name: go mod tidy проверка
